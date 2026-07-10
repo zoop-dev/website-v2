@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>zoop · admin</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css" />
+    <link rel="stylesheet" href="/admin.css" />
+  </head>
+  <body>
+
+    <div id="authOverlay" class="auth-overlay">
+      <div class="auth-card">
+        <h1>zoop <span>/ the back room</span></h1>
+        <p class="sub">who goes there? password, please.</p>
+        <div class="auth-row">
+          <input id="authPw" type="password" placeholder="the secret word" autocomplete="current-password" />
+          <button id="authBtn" type="button">let me in</button>
+        </div>
+        <p id="authError" class="auth-error"></p>
+      </div>
+    </div>
+
+    <div class="wrap" id="adminContent" style="display:none">
+      <h1>zoop <span>/ the back room</span></h1>
+      <p class="sub">mess with the site — work, stack, about. saves to the cloud, live in a blink. try not to nuke it. <a class="back" href="/admin/lnk">lnk →</a> <a class="back" href="/">← back to the site</a></p>
+
+      <div class="toolbar">
+        <button id="load" class="ghost" type="button">refetch</button>
+        <button id="import" class="ghost" type="button">load file</button>
+        <input id="importFile" type="file" accept="application/json,.json" hidden />
+        <button id="save" type="button">ship it</button>
+      </div>
+
+      <div class="raw-toggle">
+        <span class="switch" id="rawSwitch"></span>
+        <span>raw json (for gremlins)</span>
+      </div>
+
+      <div id="formEditor"></div>
+
+      <textarea id="rawJson" spellcheck="false"></textarea>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+    <script src="/admin.js"></script>
+  </body>
+</html>

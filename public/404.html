@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>zoop · 404</title>
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#000000" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@600;700;800;900&display=swap" rel="stylesheet" />
+    <style>
+      :root { --bg:#000; --type:#2bb8ff; --hover:#fff; --dim:#6f8598; }
+      * { margin: 0; box-sizing: border-box; }
+      html, body { height: 100%; }
+      body {
+        background: var(--bg);
+        color: var(--type);
+        font-family: "JetBrains Mono", ui-monospace, monospace;
+        min-height: 100svh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        gap: clamp(1rem, 3vw, 1.8rem);
+        padding: clamp(1.5rem, 6vw, 5rem);
+        overflow: hidden;
+        -webkit-user-select: none; user-select: none;
+      }
+      .big {
+        font-family: "Unbounded", sans-serif;
+        font-weight: 900;
+        font-size: clamp(6rem, 34vw, 24rem);
+        line-height: 0.82;
+        letter-spacing: -0.03em;
+        color: var(--type);
+      }
+      .msg {
+        font-size: clamp(0.95rem, 2.4vw, 1.25rem);
+        color: var(--dim);
+        max-width: 30ch;
+        line-height: 1.5;
+      }
+      .msg b { color: var(--type); font-weight: 500; }
+      .home {
+        font-family: "Unbounded", sans-serif;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: -0.01em;
+        font-size: clamp(1.4rem, 5vw, 2.6rem);
+        color: var(--type);
+        text-decoration: none;
+        display: inline-block;
+        transition: color 0.18s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @media (hover: hover) { .home:hover { color: var(--hover); transform: translateX(0.35em); } }
+      .home::before { content: "← "; }
+    </style>
+  </head>
+  <body>
+    <div class="big">404</div>
+    <p class="msg">this page <b>zooped off</b> into the void. it was probably never here, ~or was ittt~ - akward.</p>
+    <a class="home" href="/">back to safety</a>
+  </body>
+</html>

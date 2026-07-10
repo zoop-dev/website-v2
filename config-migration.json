@@ -1,0 +1,339 @@
+{
+  "work": [
+    {
+      "name": "pulse",
+      "tag": "Garmin companion app",
+      "meta": "2026 · Kotlin · Java",
+      "href": "https://fdroid.zachy.cc",
+      "desc": [
+        "a free, privacy-focused Garmin companion app — most of what the garmin app gives you, but fully local.",
+        "built natively for Android in Kotlin."
+      ],
+      "tech": [
+        {
+          "n": "Kotlin",
+          "logo": "kotlin",
+          "c": "7F52FF"
+        },
+        {
+          "n": "Android",
+          "logo": "android",
+          "c": "3DDC84"
+        }
+      ],
+      "links": [
+        {
+          "label": "f-droid",
+          "href": "https://fdroid.zachy.cc"
+        },
+        {
+          "label": "github",
+          "href": "https://github.com/zoop-dev/pulse"
+        }
+      ]
+    },
+    {
+      "name": "foyer",
+      "tag": "personal website framework + CMS",
+      "meta": "2026 · Node · Cloudflare",
+      "href": "https://foyer.zo0p.dev",
+      "desc": [
+        "an open-source, gated website framework with a built-in CMS — runs a whole family of sites from one config.",
+        "very versatile and open."
+      ],
+      "tech": [
+        {
+          "n": "Node",
+          "logo": "nodedotjs",
+          "c": "5FA04E"
+        },
+        {
+          "n": "Pages",
+          "logo": "cloudflarepages",
+          "c": "F38020"
+        },
+        {
+          "n": "KV",
+          "logo": "cloudflare",
+          "c": "F38020"
+        }
+      ],
+      "links": [
+        {
+          "label": "visit",
+          "href": "https://foyer.zo0p.dev"
+        }
+      ]
+    },
+    {
+      "name": "b3am",
+      "tag": "end-to-end encrypted messenger",
+      "meta": "2026 · Workers · D1 · WebSocket",
+      "href": "https://b3am.zo0p.dev",
+      "desc": [
+        "real time E2EE messenger, fully private and secure",
+        "being phased out due to server costs"
+      ],
+      "tech": [
+        {
+          "n": "Durable Objects",
+          "logo": "cloudflare",
+          "c": "F38020"
+        },
+        {
+          "n": "Workers",
+          "logo": "cloudflareworkers",
+          "c": "F38020"
+        },
+        {
+          "n": "WebSockets",
+          "logo": "javascript",
+          "c": "F7DF1E"
+        }
+      ],
+      "links": [
+        {
+          "label": "visit",
+          "href": "https://b3am.zo0p.dev"
+        }
+      ]
+    },
+    {
+      "name": "drop",
+      "tag": "encrypted, no-account file transfer",
+      "meta": "2025 · Workers · D1 · R2",
+      "href": "https://drop.zachy.cc",
+      "desc": [
+        "simple cross-device file transfer, end-to-end encrypted. upload, get a link, share.",
+        "files self-destruct after download or expiry."
+      ],
+      "tech": [
+        {
+          "n": "Workers",
+          "logo": "cloudflareworkers",
+          "c": "F38020"
+        },
+        {
+          "n": "D1",
+          "logo": "cloudflare",
+          "c": "F38020"
+        },
+        {
+          "n": "R2",
+          "logo": "cloudflare",
+          "c": "F38020"
+        }
+      ],
+      "links": [
+        {
+          "label": "visit",
+          "href": "https://drop.zachy.cc"
+        }
+      ]
+    },
+    {
+      "name": "my portfolio",
+      "tag": "codes",
+      "meta": "2026 · Supabase · JS",
+      "href": "https://portfolio.zo0p.dev",
+      "desc": [],
+      "tech": [],
+      "links": []
+    },
+    {
+      "name": "sp33d",
+      "tag": "network speed tester",
+      "meta": "2026",
+      "href": "https://sp33d.zo0p.dev",
+      "desc": [],
+      "tech": [],
+      "links": []
+    },
+    {
+      "name": "pr0xy",
+      "tag": "web proxy",
+      "meta": "2026",
+      "href": "https://pr0xy.zo0p.dev",
+      "desc": [],
+      "tech": [],
+      "links": []
+    },
+    {
+      "name": "m0rph",
+      "tag": "",
+      "meta": "2026",
+      "href": "https://m0rph.zo0p.dev",
+      "desc": [],
+      "tech": [],
+      "links": []
+    },
+    {
+      "name": "shortl3y",
+      "tag": "url shortener",
+      "meta": "2026",
+      "href": "https://go.zo0p.dev",
+      "desc": [],
+      "tech": [],
+      "links": []
+    },
+    {
+      "name": "backly",
+      "tag": "a little code backup tool",
+      "meta": "CLI · JavaScript",
+      "href": "https://github.com/zoop-dev/website/blob/main/public/scripts/backly.js",
+      "desc": [],
+      "tech": [],
+      "links": []
+    }
+  ],
+  "stack": [
+    {
+      "group": "Languages",
+      "items": [
+        {
+          "n": "JavaScript",
+          "logo": "javascript",
+          "c": "F7DF1E"
+        },
+        {
+          "n": "TypeScript",
+          "logo": "typescript",
+          "c": "3178C6"
+        },
+        {
+          "n": "Rust",
+          "logo": "rust",
+          "c": "FFFFFF"
+        },
+        {
+          "n": "Kotlin",
+          "logo": "kotlin",
+          "c": "7F52FF"
+        },
+        {
+          "n": "Python",
+          "logo": "python",
+          "c": "FFD43B"
+        },
+        {
+          "n": "GLSL",
+          "logo": "opengl",
+          "c": "5586A4"
+        },
+        {
+          "n": "SQL",
+          "logo": "sqlite",
+          "c": "4479A1"
+        }
+      ]
+    },
+    {
+      "group": "Frontend",
+      "items": [
+        {
+          "n": "Three.js",
+          "logo": "threedotjs",
+          "c": "FFFFFF"
+        },
+        {
+          "n": "WebGL",
+          "logo": "webgl",
+          "c": "FFFFFF"
+        },
+        {
+          "n": "GSAP",
+          "logo": "greensock",
+          "c": "88CE02"
+        },
+        {
+          "n": "Vite",
+          "logo": "vite",
+          "c": "646CFF"
+        },
+        {
+          "n": "vanilla JS",
+          "logo": "javascript",
+          "c": "F7DF1E"
+        },
+        {
+          "n": "Web Components",
+          "logo": "webcomponentsdotorg",
+          "c": "29ABE2"
+        }
+      ]
+    },
+    {
+      "group": "Cloudflare",
+      "items": [
+        {
+          "n": "Workers",
+          "logo": "cloudflareworkers",
+          "c": "F38020"
+        },
+        {
+          "n": "Pages",
+          "logo": "cloudflarepages",
+          "c": "F38020"
+        },
+        {
+          "n": "D1",
+          "logo": "cloudflare",
+          "c": "F38020"
+        },
+        {
+          "n": "R2",
+          "logo": "cloudflare",
+          "c": "F38020"
+        },
+        {
+          "n": "KV",
+          "logo": "cloudflare",
+          "c": "F38020"
+        },
+        {
+          "n": "Durable Objects",
+          "logo": "cloudflare",
+          "c": "F38020"
+        },
+        {
+          "n": "Wrangler",
+          "logo": "cloudflare",
+          "c": "F38020"
+        }
+      ]
+    },
+    {
+      "group": "Tools",
+      "items": [
+        {
+          "n": "VSCodium",
+          "logo": "vscodium"
+        },
+        {
+          "n": "Git",
+          "logo": "git",
+          "c": "F05032"
+        },
+        {
+          "n": "Figma",
+          "logo": "figma",
+          "c": "F24E1E"
+        },
+        {
+          "n": "Blender",
+          "logo": "blender",
+          "c": "F5792A"
+        },
+        {
+          "n": "the terminal",
+          "logo": "gnubash",
+          "c": "4EAA25"
+        }
+      ]
+    }
+  ],
+  "about": [
+    "im zoop, i have a lot of time and not a lot to do with it, so i make cool stuff, this is my latest creation, raw html, css, and js, bundled with rollup (using vite), minified with terser, served with cf pages and workers kv :)"
+]
+}
+

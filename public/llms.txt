@@ -1,0 +1,30 @@
+# zachy.cc
+
+> Personal portfolio site for zoop — cool things for the web. Cloudflare glazer, WebGL enjoyer.
+> Site: https://zachy.cc
+
+## About
+
+zoop builds cool things for the web on Cloudflare. The site is a vanilla JS single-page app with no framework, deployed on Cloudflare Pages with a Functions backend.
+
+## Routes
+
+- / (home — giant stacked nav: Work, About, Stack, Contact)
+- /work (project list)
+- /about (bio)
+- /stack (tech stack badges)
+- /contact (email + socials)
+- /privacy (privacy policy)
+- /terms (terms — mostly a joke)
+
+## Contact
+
+- Email: hi@zachy.cc
+- GitHub: https://github.com/zoop-dev
+- Signal: available on request
+
+## Tech
+
+- Frontend: vanilla JS, Vite, tippy.js, simple-icons
+- Backend: Cloudflare Pages Functions + KV
+- Deploy: Cloudflare Pages

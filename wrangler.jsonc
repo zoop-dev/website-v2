@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "zoop",
+  "compatibility_date": "2026-07-05",
+  "pages_build_output_dir": "./dist",
+  "vars": {
+    "LNK_HOST": "lnk.zachy.cc"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "CONFIG",
+      "id": "96b661e1818f4773acd2a3a1b39c58b0"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "LNK",
+      "database_name": "lnk",
+      "database_id": "ea573534-81a3-48ef-8337-19ddf179fe29",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

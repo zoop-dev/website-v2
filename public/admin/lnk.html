@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>zoop · lnk</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.css" />
+    <link rel="stylesheet" href="/admin.css" />
+    <link rel="stylesheet" href="/admin/lnk.css" />
+  </head>
+  <body>
+    <div id="authOverlay" class="auth-overlay">
+      <div class="auth-card">
+        <h1>zoop <span>/ lnk</span></h1>
+        <p class="sub">who goes there? password, please.</p>
+        <div class="auth-row">
+          <input id="authPw" type="password" placeholder="the secret word" autocomplete="current-password" />
+          <button id="authBtn" type="button">let me in</button>
+        </div>
+        <p id="authError" class="auth-error"></p>
+      </div>
+    </div>
+
+    <div class="wrap" id="adminContent" style="display:none">
+      <h1>zoop <span>/ lnk</span></h1>
+      <p class="sub">short links, and who clicked them. <a class="back" href="/admin">← the config</a></p>
+
+      <div class="card">
+        <div class="field">
+          <label class="field__label">Slug</label>
+          <input id="newSlug" type="text" placeholder="gh" autocomplete="off" />
+        </div>
+        <div class="field">
+          <label class="field__label">Destination</label>
+          <input id="newUrl" type="text" placeholder="https://github.com/zoop-dev" autocomplete="off" />
+        </div>
+        <button id="add" type="button">make it</button>
+      </div>
+
+      <div class="toolbar">
+        <button id="reload" class="ghost" type="button">refetch</button>
+      </div>
+
+      <div id="statsRow" class="stats"></div>
+      <div id="linksBox"></div>
+      <div id="cols" class="cols"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js@1.12.0/src/toastify.min.js"></script>
+    <script src="/admin/lnk.js"></script>
+  </body>
+</html>
