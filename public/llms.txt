@@ -5,26 +5,36 @@
 
 ## About
 
-zoop builds cool things for the web on Cloudflare. The site is a vanilla JS single-page app with no framework, deployed on Cloudflare Pages with a Functions backend.
+zoop builds weird, fast, interactive things for the web: real-time WebGL, shaders, tools, and apps. The site is a vanilla JS single-page app with no framework, deployed on Cloudflare Pages with a Functions backend. Content is served from hardcoded defaults with live overrides from Cloudflare KV.
 
 ## Routes
 
-- / (home — giant stacked nav: Work, About, Stack, Contact)
-- /work (project list)
+- / (home — giant stacked nav: Work, News, About, Stack, Contact)
+- /work (project list with expandable details)
+- /news (announcements and releases)
 - /about (bio)
 - /stack (tech stack badges)
 - /contact (email + socials)
 - /privacy (privacy policy)
 - /terms (terms — mostly a joke)
 
+## Projects
+
+- b3am — end-to-end encrypted messenger PWA (Durable Objects, AES-GCM)
+- drop — encrypted no-account file transfer (Workers, D1, R2) — https://drop.zachy.cc
+- Pulse — privacy-first health app for Android (Kotlin)
+- Foyer — config-driven framework running a family of sites (Node, Cloudflare)
+- Taskly — minimal task manager (Vite, Pages)
+
 ## Contact
 
 - Email: hi@zachy.cc
 - GitHub: https://github.com/zoop-dev
-- Signal: available on request
+- Signal: https://signal.me/#eu/eL1c4KuBK_cDlAsJaPxEpg1tXwr1RQUW8BNGstxGpVKsyEYUssFJX4q7L1VVuPD7
 
 ## Tech
 
 - Frontend: vanilla JS, Vite, tippy.js, simple-icons
-- Backend: Cloudflare Pages Functions + KV
+- Backend: Cloudflare Pages Functions, Workers KV, D1
+- Link shortener: lnk.zachy.cc (D1-backed)
 - Deploy: Cloudflare Pages
