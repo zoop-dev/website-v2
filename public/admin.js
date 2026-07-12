@@ -4,7 +4,7 @@ const formEditor = $('formEditor');
 const rawJson = $('rawJson');
 const rawSwitch = $('rawSwitch');
 
-let cfg = { work: [], news: [], stack: [], about: [] };
+let cfg = { work: [], news: [], socials: [], stack: [], about: [], source: '' };
 let isRaw = false;
 let rawSnapshot = null;
 let adminPw = '';
@@ -68,6 +68,11 @@ function render() {
     render();
   }, renderNews));
 
+  formEditor.appendChild(section('socials', 'Socials', cfg.socials.length, () => {
+    cfg.socials.push({ icon: '', label: '', href: '' });
+    render();
+  }, renderSocials));
+
   formEditor.appendChild(section('stack', 'Stack', cfg.stack.length, () => {
     cfg.stack.push({ group: '', items: [] });
     render();
@@ -77,17 +82,76 @@ function render() {
     cfg.about.push('');
     render();
   }, renderAbout));
+
+  formEditor.appendChild(sourceField());
 }
 
-function section(id, title, count, onAdd, renderBody) {
+function sourceField() {
   const sec = document.createElement('div');
   sec.className = 'section open';
+  sec.innerHTML = `
+    <div class="section__head"><span class="section__chevron">▶</span><span class="section__title">Footer</span></div>
+    <div class="section__body">
+      <div class="field">
+        <label class="field__label">Source link (footer)</label>
+        <input type="text" id="src-field" value="${esc(cfg.source || '')}" placeholder="https://github.com/…" />
+      </div>
+    </div>
+  `;
+  const head = sec.querySelector('.section__head');
+  head.onclick = () => { sec.classList.toggle('open'); sectionOpen.footer = sec.classList.contains('open'); };
+  if (sectionOpen.footer === false) sec.classList.remove('open');
+  sec.querySelector('#src-field').addEventListener('input', (e) => { cfg.source = e.target.value; });
+  return sec;
+}
+
+function renderSocials(body) {
+  if (!cfg.socials.length) {
+    body.innerHTML = '<div class="empty">no socials yet. add one.</div>';
+    return;
+  }
+  cfg.socials.forEach((s, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card__top">
+        <span class="card__num">${i + 1}</span>
+        <span class="card__spacer"></span>
+        <div class="card__btns">
+          <button class="icon" data-act="up" title="move up">↑</button>
+          <button class="icon" data-act="down" title="move down">↓</button>
+          <button class="danger" data-act="del">remove</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field__label">Icon (slug: github, spotify, signal, mail, x, instagram, linkedin, youtube, discord, telegram, bluesky, mastodon)</label>
+        <input type="text" data-key="icon" value="${esc(s.icon)}" placeholder="github" />
+      </div>
+      <div class="field">
+        <label class="field__label">Label (tooltip / aria)</label>
+        <input type="text" data-key="label" value="${esc(s.label)}" placeholder="GitHub" />
+      </div>
+      <div class="field">
+        <label class="field__label">Link (use mailto: for email)</label>
+        <input type="text" data-key="href" value="${esc(s.href)}" placeholder="https://…" />
+      </div>
+    `;
+    wireCard(card, cfg.socials, i);
+    body.appendChild(card);
+  });
+}
+
+const sectionOpen = {};
+function section(id, title, count, onAdd, renderBody) {
+  const sec = document.createElement('div');
+  const isOpen = sectionOpen[id] !== false;
+  sec.className = isOpen ? 'section open' : 'section';
   sec.id = 'sec-' + id;
 
   const head = document.createElement('div');
   head.className = 'section__head';
   head.innerHTML = `<span class="section__chevron">▶</span><span class="section__title">${title}</span><span class="section__count">${count}</span>`;
-  head.onclick = () => sec.classList.toggle('open');
+  head.onclick = () => { sec.classList.toggle('open'); sectionOpen[id] = sec.classList.contains('open'); };
   sec.appendChild(head);
 
   const body = document.createElement('div');
@@ -586,6 +650,10 @@ function normalize(c) {
         label: String(l?.label ?? ''), href: String(l?.href ?? ''),
       })) : [],
     })) : [],
+    socials: Array.isArray(c?.socials) ? c.socials.map((s) => ({
+      icon: String(s?.icon ?? ''), label: String(s?.label ?? ''), href: String(s?.href ?? ''),
+    })) : [],
+    source: typeof c?.source === 'string' ? c.source : '',
     stack: Array.isArray(c?.stack) ? c.stack.map((g) => ({
       group: String(g?.group ?? ''),
       items: Array.isArray(g?.items) ? g.items.map((it) => ({
@@ -596,8 +664,11 @@ function normalize(c) {
   };
 }
 
+const KEY_STORE = 'zoop-admin-key';
+
 function deauth() {
   adminPw = '';
+  try { localStorage.removeItem(KEY_STORE); } catch (e) { /* ignore */ }
   adminContent.style.display = 'none';
   authOverlay.style.display = '';
   authPw.value = '';
@@ -615,7 +686,7 @@ async function load() {
     });
     if (r.status === 401) { deauth(); status('session went stale — password again.', 'warn'); return; }
     const data = await r.json();
-    cfg = data ? normalize(data) : { work: [], news: [], stack: [], about: [] };
+    cfg = data ? normalize(data) : { work: [], news: [], socials: [], stack: [], about: [], source: '' };
     render();
     status(data ? 'config, loaded ✓' : 'nothing saved yet — go wild.', 'ok');
   } catch (e) {
@@ -694,6 +765,7 @@ async function authenticate() {
       return;
     }
     adminPw = pw;
+    try { localStorage.setItem(KEY_STORE, pw); } catch (e) { /* ignore */ }
     authOverlay.style.display = 'none';
     adminContent.style.display = '';
     load();
@@ -706,3 +778,18 @@ async function authenticate() {
 
 authBtn.addEventListener('click', authenticate);
 authPw.addEventListener('keydown', (e) => { if (e.key === 'Enter') authenticate(); });
+
+async function autoLogin() {
+  let pw = '';
+  try { pw = localStorage.getItem(KEY_STORE) || ''; } catch (e) { /* ignore */ }
+  if (!pw) return;
+  try {
+    const r = await fetch('/api/config', { cache: 'no-store', headers: { authorization: 'Bearer ' + pw } });
+    if (!r.ok) { try { localStorage.removeItem(KEY_STORE); } catch (e) { /* ignore */ } return; }
+    adminPw = pw;
+    authOverlay.style.display = 'none';
+    adminContent.style.display = '';
+    load();
+  } catch (e) { /* offline — leave the login screen up */ }
+}
+autoLogin();

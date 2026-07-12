@@ -4,6 +4,8 @@ import {
   siCloudflareworkers, siCloudflarepages, siCloudflare,
   siGit, siFigma, siBlender, siGnubash, siVscodium,
   siAndroid, siNodedotjs,
+  siGithub, siSpotify, siSignal, siInstagram, siYoutube,
+  siDiscord, siTelegram, siBluesky, siX, siMastodon,
 } from 'simple-icons';
 
 export const icons = {
@@ -14,4 +16,7 @@ export const icons = {
   cloudflareworkers: siCloudflareworkers, cloudflarepages: siCloudflarepages, cloudflare: siCloudflare,
   git: siGit, figma: siFigma, blender: siBlender, gnubash: siGnubash, vscodium: siVscodium,
   android: siAndroid, nodedotjs: siNodedotjs,
+  github: siGithub, spotify: siSpotify, signal: siSignal, instagram: siInstagram,
+  youtube: siYoutube, discord: siDiscord, telegram: siTelegram,
+  bluesky: siBluesky, x: siX, mastodon: siMastodon,
 };

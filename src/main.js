@@ -3,7 +3,7 @@ import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/animations/shift-away.css';
 import { version } from './config.js';
-import { work, news, stack, about } from './content.js';
+import { work, news, stack, about, socials, source } from './content.js';
 import { icons } from './icons.js';
 
 {
@@ -62,6 +62,17 @@ const badge = (it) => {
   return `<span class="badge">${logo}<span class="badge__label">${it.n}</span></span>`;
 };
 
+const isMail = (s) => s.icon === 'mail' || String(s.href || '').startsWith('mailto:');
+const socialLink = (s) => {
+  const ic = icons[s.icon];
+  const inner = isMail(s)
+    ? '<span class="material-symbols-outlined">mail</span>'
+    : (ic ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ic.path}"/></svg>` : '');
+  const ext = isMail(s) ? '' : ' target="_blank" rel="noopener"';
+  const tip = s.label ? ` data-tippy-content="${s.label}"` : '';
+  return `<a href="${s.href}"${ext} aria-label="${s.label || ''}"${tip}>${inner}</a>`;
+};
+
 function render(cfg) {
   const workEl = document.querySelector('#work .proj');
   if (workEl) workEl.innerHTML = (cfg.work ?? []).map(projRow).join('');
@@ -116,9 +127,23 @@ function render(cfg) {
     const head = item.querySelector('.news__head');
     if (head && !head.disabled) head.addEventListener('click', () => window.openNews(item, newsData[i]));
   });
+
+  const socialsCfg = cfg.socials ?? [];
+  document.querySelectorAll('.socials').forEach((c) => { c.innerHTML = socialsCfg.map(socialLink).join(''); });
+  const mailSocial = socialsCfg.find(isMail);
+  const contactMail = document.getElementById('contact-mail');
+  if (contactMail && mailSocial) {
+    contactMail.href = mailSocial.href;
+    contactMail.textContent = mailSocial.href.replace(/^mailto:/, '');
+  }
+  const srcEl = document.getElementById('legal-src');
+  if (srcEl && cfg.source) srcEl.href = cfg.source;
+
+  tippy('.socials a[data-tippy-content]', { theme: 'zoop', placement: 'top', animation: 'shift-away', arrow: true, offset: [0, 8] });
+  dispatchEvent(new Event('socials:rendered'));
 }
 
-render({ work, news, stack, about });
+render({ work, news, stack, about, socials, source });
 
 const verEl = document.getElementById('legal-ver');
 if (verEl) verEl.textContent = 'v' + version;
@@ -132,6 +157,8 @@ fetch('/api/config', { cache: 'no-store' })
         news: Array.isArray(live.news) ? live.news : news,
         stack: Array.isArray(live.stack) ? live.stack : stack,
         about: Array.isArray(live.about) ? live.about : about,
+        socials: Array.isArray(live.socials) && live.socials.length ? live.socials : socials,
+        source: typeof live.source === 'string' && live.source ? live.source : source,
       });
     }
   })
@@ -240,14 +267,6 @@ fetch('/api/config', { cache: 'no-store' })
 
   Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))]).then(run);
 })();
-
-tippy('.socials a[data-tippy-content]', {
-  theme: 'zoop',
-  placement: 'top',
-  animation: 'shift-away',
-  arrow: true,
-  offset: [0, 8],
-});
 
 const panels = [...document.querySelectorAll('.panel')];
 const byId = new Map(panels.map((p) => [p.id, p]));
@@ -397,7 +416,7 @@ function closeAnim(panel, src) {
   return new Promise((res) => setTimeout(res, T));
 }
 
-let source = null;
+let navSource = null;
 let openPanel = null;
 let openSource = null;
 
@@ -413,16 +432,16 @@ function open(id) {
   document.body.classList.toggle('is-panel', !!panel);
   if (panel) {
     openPanel = panel;
-    openSource = source;
+    openSource = navSource;
     if (panel.classList.contains('panel--legal')) slideLegal(panel);
-    else slideTitle(panel, source);
+    else slideTitle(panel, navSource);
     requestAnimationFrame(() => updateFade(panel));
     setTimeout(() => updateFade(panel), 320);
   } else {
     openPanel = null;
     openSource = null;
   }
-  source = null;
+  navSource = null;
 }
 
 function slideLegal(panel) {
@@ -480,7 +499,7 @@ document.querySelectorAll('.nav a, .legal a').forEach((a) => {
     const id = a.getAttribute('href').slice(1);
     if (!byId.has(id)) return;
     e.preventDefault();
-    source = a;
+    navSource = a;
     if (location.pathname !== '/' + id) history.pushState('', '', '/' + id);
     open(id);
   });
@@ -574,16 +593,25 @@ if (location.pathname !== '/') route(location.pathname.slice(1));
   const MAG_PULL = 0.22;
 
   const glows = [...document.querySelectorAll('.side, .hint')].map((el) => ({ el, box: el.getBoundingClientRect(), on: false }));
-  const magnets = canHover ? [...document.querySelectorAll('.socials a')] : [];
-  const magBox = magnets.map((el) => el.getBoundingClientRect());
-  const magState = magnets.map(() => ({ magnetized: false }));
+  let magnets = [];
+  let magBox = [];
+  let magState = [];
 
   const ro = new ResizeObserver(() => {
     glows.forEach((g) => { g.box = g.el.getBoundingClientRect(); });
     magnets.forEach((el, i) => { magBox[i] = el.getBoundingClientRect(); });
   });
   glows.forEach((g) => ro.observe(g.el));
-  magnets.forEach((el) => ro.observe(el));
+
+  const scanMagnets = () => {
+    magnets.forEach((el) => ro.unobserve(el));
+    magnets = canHover ? [...document.querySelectorAll('.socials a')] : [];
+    magBox = magnets.map((el) => el.getBoundingClientRect());
+    magState = magnets.map(() => ({ magnetized: false }));
+    magnets.forEach((el) => ro.observe(el));
+  };
+  scanMagnets();
+  addEventListener('socials:rendered', scanMagnets, { passive: true });
 
   const fadeOut = (g) => { g.el.style.transition = '--glow-alpha 0.85s ease'; g.el.style.setProperty('--glow-alpha', '0'); g.on = false; };
   const setGlow = (g, x, y) => {

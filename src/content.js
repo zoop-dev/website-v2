@@ -66,6 +66,15 @@ export const work = [
   },
 ];
 
+export const socials = [
+  { icon: 'signal', label: 'Signal', href: 'https://signal.me/#eu/eL1c4KuBK_cDlAsJaPxEpg1tXwr1RQUW8BNGstxGpVKsyEYUssFJX4q7L1VVuPD7' },
+  { icon: 'spotify', label: 'Spotify', href: 'https://open.spotify.com/user/31sozlvjlwf3do464hnstucbhx4e?si=MaPj403oS2yXaFBXN9KUdA' },
+  { icon: 'github', label: 'GitHub', href: 'https://github.com/zoop-dev' },
+  { icon: 'mail', label: 'hi@zachy.cc', href: 'mailto:hi@zachy.cc' },
+];
+
+export const source = 'https://github.com/zoop-dev/website-v2';
+
 export const news = [
   { date: '2026-07-11', tag: 'release', title: 'b3am v2 is here',
     body: [
