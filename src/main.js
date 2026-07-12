@@ -3,7 +3,7 @@ import tippy from 'tippy.js';
 import 'tippy.js/dist/tippy.css';
 import 'tippy.js/animations/shift-away.css';
 import { version } from './config.js';
-import { work, stack, about } from './content.js';
+import { work, news, stack, about } from './content.js';
 import { icons } from './icons.js';
 
 {
@@ -38,6 +38,22 @@ const projRow = (p) => {
 
   return `<li class="proj__row${hasDetail ? ' proj__row--expandable' : ''}"><a ${link} class="proj__link"><span class="proj__name">${p.name}</span><span class="proj__tag">${p.tag}</span><span class="proj__meta">${p.meta}${hasDetail ? ' <span class="proj__expand-icon">+</span>' : ''}</span></a>${detail}</li>`;
 };
+const newsBodyHtml = (n) => (Array.isArray(n.body) ? n.body : (n.body ? [n.body] : []))
+  .map((p) => `<p>${p}</p>`).join('');
+const newsLinksHtml = (n) => (n.links || []).map((l) =>
+  `<a class="news__btn" href="${l.href}" target="_blank" rel="noopener">${l.label} →</a>`,
+).join('');
+
+const newsItem = (n) => {
+  const hasMore = !!(newsBodyHtml(n) || newsLinksHtml(n));
+  return `<li class="news__item">
+    <button class="news__head" type="button"${hasMore ? '' : ' disabled'}>
+      <div class="news__meta">${n.date ? `<time class="news__date">${n.date}</time>` : ''}${n.tag ? `<span class="news__tag">${n.tag}</span>` : ''}</div>
+      ${n.title ? `<h3 class="news__title">${n.title}</h3>` : ''}
+      ${hasMore ? '<span class="news__more">read <span aria-hidden="true">→</span></span>' : ''}
+    </button>
+  </li>`;
+};
 const badge = (it) => {
   const ic = icons[it.logo];
   const logo = ic
@@ -49,6 +65,9 @@ const badge = (it) => {
 function render(cfg) {
   const workEl = document.querySelector('#work .proj');
   if (workEl) workEl.innerHTML = (cfg.work ?? []).map(projRow).join('');
+
+  const newsEl = document.querySelector('#news .news');
+  if (newsEl) newsEl.innerHTML = (cfg.news ?? []).map(newsItem).join('');
 
   const stackEl = document.querySelector('#stack .stack');
   if (stackEl) stackEl.innerHTML = (cfg.stack ?? []).map((g) =>
@@ -88,12 +107,18 @@ function render(cfg) {
 
       const panel = row.closest('.panel');
       updateFade(panel);
-      setTimeout(() => updateFade(panel), 380);
+      setTimeout(() => updateFade(panel), 460);
     });
+  });
+
+  const newsData = cfg.news ?? [];
+  document.querySelectorAll('#news .news__item').forEach((item, i) => {
+    const head = item.querySelector('.news__head');
+    if (head && !head.disabled) head.addEventListener('click', () => window.openNews(item, newsData[i]));
   });
 }
 
-render({ work, stack, about });
+render({ work, news, stack, about });
 
 const verEl = document.getElementById('legal-ver');
 if (verEl) verEl.textContent = 'v' + version;
@@ -104,6 +129,7 @@ fetch('/api/config', { cache: 'no-store' })
     if (live && typeof live === 'object') {
       render({
         work: Array.isArray(live.work) ? live.work : work,
+        news: Array.isArray(live.news) ? live.news : news,
         stack: Array.isArray(live.stack) ? live.stack : stack,
         about: Array.isArray(live.about) ? live.about : about,
       });
@@ -243,10 +269,29 @@ function slideTitle(panel, source) {
   const line = panel.querySelector('.panel__line');
   if (!title) return;
   panel.style.removeProperty('--bar-top');
+
+  const isMobile = matchMedia('(max-width: 680px)').matches;
+
+  title.style.fontSize = isMobile && source ? getComputedStyle(source).fontSize : '';
+
   const last = title.getBoundingClientRect();
 
   let frames, bodyTopPx;
-  if (source) {
+  if (isMobile) {
+
+    const r = document.createRange();
+    r.selectNodeContents(title);
+    const naturalW = r.getBoundingClientRect().width;
+    const sx = naturalW > 0 ? title.clientWidth / naturalW : 1;
+    title.dataset.sx = sx;
+    title.style.transformOrigin = 'left center';
+    const startY = source ? source.getBoundingClientRect().top - last.top : innerHeight * 0.4;
+    frames = [
+      { transform: `translateY(${startY}px) scaleX(${sx})`, offset: 0, easing: EASE },
+      { transform: `translateY(0px) scaleX(${sx})`, offset: 1 },
+    ];
+    bodyTopPx = last.bottom + 10;
+  } else if (source) {
     const f = source.getBoundingClientRect();
     const dx = f.left - last.left;
     const dy = f.top - last.top;
@@ -272,11 +317,19 @@ function slideTitle(panel, source) {
     { duration: descentDur, delay: descentStart, easing: EASE, fill: 'both' },
   );
   if (line) {
-    line.animate([
-      { transform: 'translateY(0) scaleX(0)', opacity: 1, offset: 0, easing: EASE },
-      { transform: 'translateY(0) scaleX(1)', opacity: 1, offset: 0.2, easing: EASE },
-      { transform: `translateY(${H}px) scaleX(1)`, opacity: 1, offset: 1 },
-    ], { duration: 750, delay: 300, fill: 'forwards' });
+    if (isMobile) {
+
+      line.animate([
+        { transform: 'translateY(0) scaleX(0)', opacity: 1, offset: 0, easing: EASE },
+        { transform: 'translateY(0) scaleX(1)', opacity: 1, offset: 1 },
+      ], { duration: 520, delay: 340, fill: 'forwards' });
+    } else {
+      line.animate([
+        { transform: 'translateY(0) scaleX(0)', opacity: 1, offset: 0, easing: EASE },
+        { transform: 'translateY(0) scaleX(1)', opacity: 1, offset: 0.2, easing: EASE },
+        { transform: `translateY(${H}px) scaleX(1)`, opacity: 1, offset: 1 },
+      ], { duration: 750, delay: 300, fill: 'forwards' });
+    }
   }
 }
 
@@ -285,7 +338,32 @@ function closeAnim(panel, src) {
   const body = panel.querySelector('.panel__body');
   const line = panel.querySelector('.panel__line');
   if (!title) return Promise.resolve();
+  const isMobile = matchMedia('(max-width: 680px)').matches;
   const last = title.getBoundingClientRect();
+  const H = body.getBoundingClientRect().height;
+  const A = 380, B = 440, T = A + B;
+
+  if (isMobile) {
+    const endY = src ? src.getBoundingClientRect().top - last.top : innerHeight * 0.4;
+    const sx = parseFloat(title.dataset.sx) || 1;
+    title.style.transformOrigin = 'left center';
+    title.animate([
+      { transform: `translateY(0px) scaleX(${sx})`, offset: 0, easing: EASE },
+      { transform: `translateY(${endY}px) scaleX(${sx})`, offset: 1 },
+    ], { duration: T, fill: 'forwards' });
+    body.animate(
+      [{ clipPath: 'inset(0 0 0% 0)' }, { clipPath: 'inset(0 0 100% 0)' }],
+      { duration: A, easing: 'linear', fill: 'forwards' },
+    );
+    if (line) {
+      line.style.transformOrigin = 'right center';
+      line.animate([
+        { transform: 'translateY(0px) scaleX(1)', offset: 0, easing: EASE },
+        { transform: `translateY(${endY}px) scaleX(0)`, offset: 1, easing: EASE },
+      ], { duration: T, fill: 'forwards' });
+    }
+    return new Promise((res) => setTimeout(res, T));
+  }
 
   let dx, dy;
   if (src) {
@@ -296,8 +374,6 @@ function closeAnim(panel, src) {
     dx = -innerWidth * 0.6;
     dy = 0;
   }
-  const H = body.getBoundingClientRect().height;
-  const A = 380, B = 440, T = A + B;
 
   title.animate([
     { transform: 'translate(0px, 0px)', offset: 0, easing: 'linear' },
@@ -374,6 +450,12 @@ function cleanup(panel) {
   });
   const line = panel.querySelector('.panel__line');
   if (line) line.style.transformOrigin = '';
+  const title = panel.querySelector('.panel__title');
+  if (title) {
+    title.style.fontSize = '';
+    title.style.transformOrigin = '';
+    delete title.dataset.sx;
+  }
   const x = panel.querySelector('.close-x');
   if (x) x.classList.remove('is-closing');
 }
@@ -420,7 +502,67 @@ panels.forEach((p) => {
 });
 
 function route(id) { open(!id ? '' : byId.has(id) ? id : 'notfound'); }
-addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+
+const newsFull = document.getElementById('newsfull');
+let newsFullOpen = false;
+let newsSource = null;
+{
+  const panel = newsFull?.querySelector('.newsfull__panel');
+  const scroll = newsFull?.querySelector('.newsfull__scroll');
+  const edgeTop = newsFull?.querySelector('.newsfull__edge--top');
+  const edgeBot = newsFull?.querySelector('.newsfull__edge--bot');
+  const metaEl = newsFull?.querySelector('.newsfull__meta');
+  const titleEl = newsFull?.querySelector('.newsfull__title');
+  const bodyEl = newsFull?.querySelector('.newsfull__body');
+  const linksEl = newsFull?.querySelector('.newsfull__links');
+
+  const split = (r, opening) => {
+    const vh = innerHeight;
+    const bandTop = `inset(${r.top}px 0 ${Math.max(0, vh - r.bottom)}px 0)`;
+    const full = 'inset(0px 0 0px 0)';
+    const d = opening ? 620 : 470;
+    const opt = { duration: d, easing: EASE, fill: opening ? 'both' : 'forwards' };
+    panel.animate(opening ? [{ clipPath: bandTop }, { clipPath: full }] : [{ clipPath: full }, { clipPath: bandTop }], opt);
+    edgeTop.animate(opening
+      ? [{ transform: `translateY(${r.top}px)` }, { transform: 'translateY(-3px)' }]
+      : [{ transform: 'translateY(-3px)' }, { transform: `translateY(${r.top}px)` }], opt);
+    edgeBot.animate(opening
+      ? [{ transform: `translateY(${r.bottom}px)` }, { transform: `translateY(${vh}px)` }]
+      : [{ transform: `translateY(${vh}px)` }, { transform: `translateY(${r.bottom}px)` }], opt);
+    const cd = opening ? { duration: 300, delay: 200, easing: EASE, fill: 'both' } : { duration: 200, easing: EASE, fill: 'forwards' };
+    return scroll.animate(opening ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }], cd);
+  };
+
+  window.openNews = (item, n) => {
+    if (!newsFull || !n) return;
+    metaEl.innerHTML = `${n.date ? `<time class="news__date">${n.date}</time>` : ''}${n.tag ? `<span class="news__tag">${n.tag}</span>` : ''}`;
+    titleEl.innerHTML = n.title || '';
+    bodyEl.innerHTML = newsBodyHtml(n);
+    linksEl.innerHTML = newsLinksHtml(n);
+    newsSource = item;
+    scroll.scrollTop = 0;
+    newsFull.classList.add('is-open');
+    newsFull.setAttribute('aria-hidden', 'false');
+    newsFullOpen = true;
+    split(item.getBoundingClientRect(), true);
+  };
+
+  window.closeNews = () => {
+    if (!newsFull || !newsFullOpen) return;
+    newsFullOpen = false;
+    const r = newsSource ? newsSource.getBoundingClientRect()
+      : { top: innerHeight * 0.44, bottom: innerHeight * 0.56 };
+    split(r, false);
+    setTimeout(() => {
+      newsFull.classList.remove('is-open');
+      newsFull.setAttribute('aria-hidden', 'true');
+    }, 480);
+  };
+
+  newsFull?.querySelector('.newsfull__close')?.addEventListener('click', () => window.closeNews());
+}
+
+addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (newsFullOpen) window.closeNews(); else close(); } });
 addEventListener('popstate', () => route(location.pathname.slice(1)));
 addEventListener('resize', () => { if (openPanel) updateFade(openPanel); }, { passive: true });
 if (location.pathname !== '/') route(location.pathname.slice(1));
@@ -496,6 +638,52 @@ if (location.pathname !== '/') route(location.pathname.slice(1));
 
   addEventListener('pointerup', clearAll, { passive: true });
   addEventListener('pointercancel', clearAll, { passive: true });
+}
+
+{
+  const nav = document.querySelector('.nav');
+  const side = document.querySelector('.side');
+  const mq = matchMedia('(max-width: 680px)');
+  const range = document.createRange();
+
+  const fit = () => {
+    const mobile = mq.matches;
+
+    if (nav) {
+      const links = nav.querySelectorAll('a');
+      if (!mobile) {
+        links.forEach((a) => { a.style.fontSize = ''; });
+      } else {
+        const avail = nav.clientWidth;
+        if (avail) links.forEach((a) => {
+          a.style.fontSize = '100px';
+          range.selectNodeContents(a);
+          const tw = range.getBoundingClientRect().width;
+          if (tw > 0) a.style.fontSize = ((100 * avail) / tw).toFixed(2) + 'px';
+        });
+      }
+    }
+
+    if (side) {
+      if (!mobile) {
+        side.style.transform = '';
+      } else {
+        side.style.transform = 'none';
+        range.selectNodeContents(side);
+        const nw = range.getBoundingClientRect().width;
+        const avail = nav ? nav.clientWidth : 0;
+        if (nw > 0 && avail) side.style.transform = `scaleX(${(avail / nw).toFixed(3)})`;
+      }
+    }
+  };
+
+  let raf = 0;
+  const schedule = () => { if (raf) return; raf = requestAnimationFrame(() => { raf = 0; fit(); }); };
+  addEventListener('resize', schedule, { passive: true });
+  addEventListener('orientationchange', schedule, { passive: true });
+  mq.addEventListener?.('change', schedule);
+  document.fonts.ready.then(fit);
+  fit();
 }
 
 {

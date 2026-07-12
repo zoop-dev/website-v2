@@ -66,6 +66,18 @@ export const work = [
   },
 ];
 
+export const news = [
+  { date: '2026-07-11', tag: 'release', title: 'b3am v2 is here',
+    body: [
+      'the encrypted messenger got a ground-up rewrite. faster, tougher crypto, and a UI that finally feels right.',
+      'still no accounts, no phone number, no server holding your messages — just open the link and talk.',
+    ],
+    links: [
+      { label: 'try it', href: 'https://b3am.zo0p.dev' },
+    ],
+  },
+];
+
 export const stack = [
   { group: 'Languages', items: [
     { n: 'JavaScript', logo: 'javascript', c: 'F7DF1E' },

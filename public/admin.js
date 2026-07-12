@@ -4,7 +4,7 @@ const formEditor = $('formEditor');
 const rawJson = $('rawJson');
 const rawSwitch = $('rawSwitch');
 
-let cfg = { work: [], stack: [], about: [] };
+let cfg = { work: [], news: [], stack: [], about: [] };
 let isRaw = false;
 let rawSnapshot = null;
 let adminPw = '';
@@ -62,6 +62,11 @@ function render() {
     cfg.work.push({ name: '', tag: '', meta: '', href: '' });
     render();
   }, renderWork));
+
+  formEditor.appendChild(section('news', 'News', cfg.news.length, () => {
+    cfg.news.unshift({ date: new Date().toISOString().slice(0, 10), tag: '', title: '', body: [''], links: [] });
+    render();
+  }, renderNews));
 
   formEditor.appendChild(section('stack', 'Stack', cfg.stack.length, () => {
     cfg.stack.push({ group: '', items: [] });
@@ -294,6 +299,124 @@ function buildLinksSection(pi) {
   return sub;
 }
 
+function renderNews(body) {
+  if (!cfg.news.length) {
+    body.innerHTML = '<div class="empty">no news yet. ship something worth announcing.</div>';
+    return;
+  }
+  cfg.news.forEach((n, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `
+      <div class="card__top">
+        <span class="card__num">${i + 1}</span>
+        <span class="card__spacer"></span>
+        <div class="card__btns">
+          <button class="icon" data-act="up" title="move up">↑</button>
+          <button class="icon" data-act="down" title="move down">↓</button>
+          <button class="danger" data-act="del">remove</button>
+        </div>
+      </div>
+      <div class="field">
+        <label class="field__label">Date</label>
+        <input type="text" data-key="date" value="${esc(n.date)}" placeholder="2026-07-11" />
+      </div>
+      <div class="field">
+        <label class="field__label">Tag (small chip, e.g. release)</label>
+        <input type="text" data-key="tag" value="${esc(n.tag)}" placeholder="release" />
+      </div>
+      <div class="field">
+        <label class="field__label">Title</label>
+        <input type="text" data-key="title" value="${esc(n.title)}" placeholder="what happened" />
+      </div>
+    `;
+    wireCard(card, cfg.news, i);
+    card.appendChild(buildNewsBodySection(i));
+    card.appendChild(buildNewsLinksSection(i));
+    body.appendChild(card);
+  });
+}
+
+function buildNewsBodySection(ni) {
+  const n = cfg.news[ni];
+  const sub = subSection('Body', 'paragraphs of the post');
+  const items = document.createElement('div');
+  items.className = 'sub__items';
+  (n.body || []).forEach((text, di) => {
+    const row = document.createElement('div');
+    row.className = 'sub__row';
+    row.innerHTML = `
+      <textarea rows="2" placeholder="paragraph…">${esc(text)}</textarea>
+      <div class="card__btns">
+        <button class="icon" title="move up">↑</button>
+        <button class="icon" title="move down">↓</button>
+        <button class="danger" title="remove">×</button>
+      </div>
+    `;
+    const ta = row.querySelector('textarea');
+    ta.addEventListener('input', () => { cfg.news[ni].body[di] = ta.value; });
+    const btns = row.querySelectorAll('button');
+    btns[0].onclick = () => move(cfg.news[ni].body, di, -1);
+    btns[1].onclick = () => move(cfg.news[ni].body, di, 1);
+    btns[2].onclick = () => remove(cfg.news[ni].body, di);
+    items.appendChild(row);
+  });
+  sub.appendChild(items);
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-btn add-btn--sub';
+  addBtn.type = 'button';
+  addBtn.textContent = '+ add a paragraph';
+  addBtn.onclick = () => {
+    if (!cfg.news[ni].body) cfg.news[ni].body = [];
+    cfg.news[ni].body.push('');
+    render();
+  };
+  sub.appendChild(addBtn);
+  return sub;
+}
+
+function buildNewsLinksSection(ni) {
+  const n = cfg.news[ni];
+  const sub = subSection('Links', 'buttons shown under the post');
+  const items = document.createElement('div');
+  items.className = 'sub__items';
+  (n.links || []).forEach((link, li) => {
+    const row = document.createElement('div');
+    row.className = 'badge-row';
+    row.innerHTML = `
+      <div class="field__row">
+        <input type="text" value="${esc(link.label)}" placeholder="label (e.g. try it)" />
+        <input type="text" value="${esc(link.href)}" placeholder="https://…" />
+        <div class="card__btns">
+          <button class="icon" title="move up">↑</button>
+          <button class="icon" title="move down">↓</button>
+          <button class="danger" title="remove">×</button>
+        </div>
+      </div>
+    `;
+    const [labelInput, hrefInput] = row.querySelectorAll('input[type="text"]');
+    labelInput.addEventListener('input', () => { cfg.news[ni].links[li].label = labelInput.value; });
+    hrefInput.addEventListener('input', () => { cfg.news[ni].links[li].href = hrefInput.value; });
+    const btns = row.querySelectorAll('button');
+    btns[0].onclick = () => move(cfg.news[ni].links, li, -1);
+    btns[1].onclick = () => move(cfg.news[ni].links, li, 1);
+    btns[2].onclick = () => remove(cfg.news[ni].links, li);
+    items.appendChild(row);
+  });
+  sub.appendChild(items);
+  const addBtn = document.createElement('button');
+  addBtn.className = 'add-btn add-btn--sub';
+  addBtn.type = 'button';
+  addBtn.textContent = '+ add a link';
+  addBtn.onclick = () => {
+    if (!cfg.news[ni].links) cfg.news[ni].links = [];
+    cfg.news[ni].links.push({ label: '', href: '' });
+    render();
+  };
+  sub.appendChild(addBtn);
+  return sub;
+}
+
 function renderAbout(body) {
   if (!cfg.about.length) {
     body.innerHTML = '<div class="empty">no words yet. say something.</div>';
@@ -456,6 +579,13 @@ function normalize(c) {
               label: String(l?.label ?? ''), href: String(l?.href ?? ''),
             })) : [],
           })) : [],
+    news: Array.isArray(c?.news) ? c.news.map((n) => ({
+      date: String(n?.date ?? ''), tag: String(n?.tag ?? ''), title: String(n?.title ?? ''),
+      body: Array.isArray(n?.body) ? n.body.map((p) => String(p ?? '')) : [],
+      links: Array.isArray(n?.links) ? n.links.map((l) => ({
+        label: String(l?.label ?? ''), href: String(l?.href ?? ''),
+      })) : [],
+    })) : [],
     stack: Array.isArray(c?.stack) ? c.stack.map((g) => ({
       group: String(g?.group ?? ''),
       items: Array.isArray(g?.items) ? g.items.map((it) => ({
@@ -485,7 +615,7 @@ async function load() {
     });
     if (r.status === 401) { deauth(); status('session went stale — password again.', 'warn'); return; }
     const data = await r.json();
-    cfg = data ? normalize(data) : { work: [], stack: [], about: [] };
+    cfg = data ? normalize(data) : { work: [], news: [], stack: [], about: [] };
     render();
     status(data ? 'config, loaded ✓' : 'nothing saved yet — go wild.', 'ok');
   } catch (e) {

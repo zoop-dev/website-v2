@@ -37,6 +37,7 @@
     <main class="stage">
       <nav class="nav">
         <a href="/work">Work</a>
+        <a href="/news">News</a>
         <a href="/about">About</a>
         <a href="/stack">Stack</a>
         <a href="/contact">Contact</a>
@@ -68,6 +69,17 @@
       <div class="panel__line" aria-hidden="true"></div>
       <div class="panel__body">
         <ul class="proj"></ul>
+      </div>
+    </section>
+
+    <section class="panel" id="news" aria-hidden="true">
+      <div class="panel__bar">
+        <button class="panel__close" type="button" aria-label="Close"><span class="close-x" aria-hidden="true">✕</span></button>
+        <h2 class="panel__title">News</h2>
+      </div>
+      <div class="panel__line" aria-hidden="true"></div>
+      <div class="panel__body">
+        <ul class="news"></ul>
       </div>
     </section>
 
@@ -158,6 +170,22 @@
         </div>
       </div>
     </section>
+
+    <article class="newsfull" id="newsfull" aria-hidden="true">
+      <div class="newsfull__panel">
+        <button class="newsfull__close" type="button" aria-label="Back to news"><span class="close-x" aria-hidden="true">✕</span></button>
+        <div class="newsfull__scroll">
+          <div class="newsfull__inner">
+            <div class="newsfull__meta"></div>
+            <h2 class="newsfull__title"></h2>
+            <div class="newsfull__body prose"></div>
+            <div class="newsfull__links"></div>
+          </div>
+        </div>
+      </div>
+      <div class="newsfull__edge newsfull__edge--top" aria-hidden="true"></div>
+      <div class="newsfull__edge newsfull__edge--bot" aria-hidden="true"></div>
+    </article>
 
     <div class="notice" id="notice" role="dialog" aria-label="What's new" hidden>
       <div class="notice__body">
