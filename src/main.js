@@ -4,7 +4,7 @@ import 'tippy.js/dist/tippy.css';
 import 'tippy.js/animations/shift-away.css';
 import { version } from './config.js';
 import { work, news, stack, about, socials, source } from './content.js';
-import { icons } from './icons.js';
+import { iconUrl } from './icons.js';
 
 {
   const zoop = 'color:#2bb8ff;font:900 46px/1 Unbounded,system-ui,sans-serif;text-shadow:0 2px 24px rgba(43,184,255,.5)';
@@ -54,20 +54,20 @@ const newsItem = (n) => {
     </button>
   </li>`;
 };
+const maskStyle = (slug) => `-webkit-mask-image:url('${iconUrl(slug)}');mask-image:url('${iconUrl(slug)}');`;
+
 const badge = (it) => {
-  const ic = icons[it.logo];
-  const logo = ic
-    ? `<svg class="badge__logo" viewBox="0 0 24 24" aria-hidden="true" style="fill:#${it.c || ic.hex}"><path d="${ic.path}"/></svg>`
+  const logo = it.logo
+    ? `<span class="badge__logo" aria-hidden="true" style="${maskStyle(it.logo)}${it.c ? `background-color:#${it.c};` : ''}"></span>`
     : '';
   return `<span class="badge">${logo}<span class="badge__label">${it.n}</span></span>`;
 };
 
 const isMail = (s) => s.icon === 'mail' || String(s.href || '').startsWith('mailto:');
 const socialLink = (s) => {
-  const ic = icons[s.icon];
   const inner = isMail(s)
     ? '<span class="material-symbols-outlined">mail</span>'
-    : (ic ? `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${ic.path}"/></svg>` : '');
+    : (s.icon ? `<span class="social-icon" aria-hidden="true" style="${maskStyle(s.icon)}"></span>` : '');
   const ext = isMail(s) ? '' : ' target="_blank" rel="noopener"';
   const tip = s.label ? ` data-tippy-content="${s.label}"` : '';
   return `<a href="${s.href}"${ext} aria-label="${s.label || ''}"${tip}>${inner}</a>`;

@@ -668,7 +668,7 @@ const KEY_STORE = 'zoop-admin-key';
 
 function deauth() {
   adminPw = '';
-  try { localStorage.removeItem(KEY_STORE); } catch (e) { /* ignore */ }
+  try { localStorage.removeItem(KEY_STORE); } catch (e) { }
   adminContent.style.display = 'none';
   authOverlay.style.display = '';
   authPw.value = '';
@@ -765,7 +765,7 @@ async function authenticate() {
       return;
     }
     adminPw = pw;
-    try { localStorage.setItem(KEY_STORE, pw); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(KEY_STORE, pw); } catch (e) { }
     authOverlay.style.display = 'none';
     adminContent.style.display = '';
     load();
@@ -781,15 +781,15 @@ authPw.addEventListener('keydown', (e) => { if (e.key === 'Enter') authenticate(
 
 async function autoLogin() {
   let pw = '';
-  try { pw = localStorage.getItem(KEY_STORE) || ''; } catch (e) { /* ignore */ }
+  try { pw = localStorage.getItem(KEY_STORE) || ''; } catch (e) { }
   if (!pw) return;
   try {
     const r = await fetch('/api/config', { cache: 'no-store', headers: { authorization: 'Bearer ' + pw } });
-    if (!r.ok) { try { localStorage.removeItem(KEY_STORE); } catch (e) { /* ignore */ } return; }
+    if (!r.ok) { try { localStorage.removeItem(KEY_STORE); } catch (e) { } return; }
     adminPw = pw;
     authOverlay.style.display = 'none';
     adminContent.style.display = '';
     load();
-  } catch (e) { /* offline — leave the login screen up */ }
+  } catch (e) { }
 }
 autoLogin();

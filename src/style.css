@@ -135,7 +135,13 @@ body {
   will-change: transform;
 }
 .socials a:hover { color: var(--type-hover); }
-.socials svg { width: 22px; height: 22px; display: block; fill: currentColor; }
+.socials .social-icon {
+  width: 22px; height: 22px; display: block; flex: none;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
+}
 .socials .material-symbols-outlined { font-size: 24px; line-height: 1; }
 
 .legal {
@@ -604,7 +610,13 @@ body {
   transition: color 0.18s ease, border-color 0.18s ease, transform 0.18s ease;
 }
 .badge:hover { color: var(--type-hover); border-color: var(--type); transform: translateY(-2px); }
-.badge__logo { width: 1.1em; height: 1.1em; display: block; flex: none; }
+.badge__logo {
+  width: 1.1em; height: 1.1em; display: block; flex: none;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center; mask-position: center;
+  -webkit-mask-size: contain; mask-size: contain;
+}
 .badge__label { white-space: nowrap; }
 
 .prose { max-width: 42ch; }
@@ -734,7 +746,7 @@ body {
   .foot { margin-top: auto; width: 100%; gap: 0.9rem; }
   .socials { margin-top: 0; gap: 0.55rem; }
   .socials a { padding: 0.5rem 0.5rem 0.5rem 0; }
-  .socials svg { width: 20px; height: 20px; }
+  .socials .social-icon { width: 20px; height: 20px; }
   .socials .material-symbols-outlined { font-size: 22px; }
   .legal {
     margin-top: 0;

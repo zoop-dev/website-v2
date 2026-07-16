@@ -9,7 +9,6 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "simple-icons": "^16.25.0",
     "tippy.js": "^6.3.7"
   },
   "devDependencies": {
