@@ -36,6 +36,14 @@ const hexToColor = (h) => {
 };
 const colorToHex = (c) => c.replace('#', '').toUpperCase();
 
+const slugify = (s) => String(s || '')
+  .toLowerCase().trim()
+  .replace(/['’]/g, '')
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '')
+  .slice(0, 60);
+const autoSlug = (n, i) => slugify(n && n.slug) || slugify(n && n.title) || String(i + 1);
+
 function move(arr, idx, dir) {
   const ni = idx + dir;
   if (ni < 0 || ni >= arr.length) return;
@@ -64,7 +72,7 @@ function render() {
   }, renderWork));
 
   formEditor.appendChild(section('news', 'News', cfg.news.length, () => {
-    cfg.news.unshift({ date: new Date().toISOString().slice(0, 10), tag: '', title: '', body: [''], links: [] });
+    cfg.news.unshift({ date: new Date().toISOString().slice(0, 10), tag: '', title: '', slug: '', body: [''], links: [] });
     render();
   }, renderNews));
 
@@ -393,6 +401,10 @@ function renderNews(body) {
         <label class="field__label">Title</label>
         <input type="text" data-key="title" value="${esc(n.title)}" placeholder="what happened" />
       </div>
+      <div class="field">
+        <label class="field__label">URL slug — zachy.cc/news/<b>${esc(autoSlug(n, i))}</b> (leave blank to auto-generate from the title)</label>
+        <input type="text" data-key="slug" value="${esc(n.slug)}" placeholder="${esc(slugify(n.title) || 'my-post')}" />
+      </div>
     `;
     wireCard(card, cfg.news, i);
     card.appendChild(buildNewsBodySection(i));
@@ -645,6 +657,7 @@ function normalize(c) {
           })) : [],
     news: Array.isArray(c?.news) ? c.news.map((n) => ({
       date: String(n?.date ?? ''), tag: String(n?.tag ?? ''), title: String(n?.title ?? ''),
+      slug: String(n?.slug ?? ''),
       body: Array.isArray(n?.body) ? n.body.map((p) => String(p ?? '')) : [],
       links: Array.isArray(n?.links) ? n.links.map((l) => ({
         label: String(l?.label ?? ''), href: String(l?.href ?? ''),

@@ -38,6 +38,15 @@ const projRow = (p) => {
 
   return `<li class="proj__row${hasDetail ? ' proj__row--expandable' : ''}"><a ${link} class="proj__link"><span class="proj__name">${p.name}</span><span class="proj__tag">${p.tag}</span><span class="proj__meta">${p.meta}${hasDetail ? ' <span class="proj__expand-icon">+</span>' : ''}</span></a>${detail}</li>`;
 };
+const slugify = (s) => String(s || '')
+  .toLowerCase().trim()
+  .replace(/['’]/g, '')
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '')
+  .slice(0, 60);
+const newsSlug = (n, i) => slugify(n && n.slug) || slugify(n && n.title) || String(i + 1);
+let currentNews = [];
+
 const newsBodyHtml = (n) => (Array.isArray(n.body) ? n.body : (n.body ? [n.body] : []))
   .map((p) => `<p>${p}</p>`).join('');
 const newsLinksHtml = (n) => (n.links || []).map((l) =>
@@ -123,9 +132,14 @@ function render(cfg) {
   });
 
   const newsData = cfg.news ?? [];
+  currentNews = newsData;
   document.querySelectorAll('#news .news__item').forEach((item, i) => {
     const head = item.querySelector('.news__head');
-    if (head && !head.disabled) head.addEventListener('click', () => window.openNews(item, newsData[i]));
+    if (head && !head.disabled) head.addEventListener('click', () => {
+      const path = '/news/' + newsSlug(newsData[i], i);
+      if (location.pathname !== path) history.pushState('', '', path);
+      window.openNews(item, newsData[i]);
+    });
   });
 
   const socialsCfg = cfg.socials ?? [];
@@ -162,7 +176,10 @@ fetch('/api/config', { cache: 'no-store' })
       });
     }
   })
-  .catch(() => {});
+  .catch(() => {})
+  .finally(() => {
+    if (location.pathname.startsWith('/news/') && !newsFullOpen) route(location.pathname);
+  });
 
 (function runLoader() {
   const loader = document.getElementById('loader');
@@ -520,7 +537,17 @@ panels.forEach((p) => {
   });
 });
 
-function route(id) { open(!id ? '' : byId.has(id) ? id : 'notfound'); }
+function route(path) {
+  const seg = String(path || '').split('/').filter(Boolean);
+  const id = seg[0] || '';
+  const slug = seg[1] || '';
+
+  if (newsFullOpen && !(id === 'news' && slug)) window.closeNews(true);
+
+  if (openPanel !== byId.get(id) || !id) open(!id ? '' : byId.has(id) ? id : 'notfound');
+
+  if (id === 'news' && slug && !newsFullOpen) openNewsBySlug(slug);
+}
 
 const newsFull = document.getElementById('newsfull');
 let newsFullOpen = false;
@@ -566,9 +593,10 @@ let newsSource = null;
     split(item.getBoundingClientRect(), true);
   };
 
-  window.closeNews = () => {
+  window.closeNews = (silent) => {
     if (!newsFull || !newsFullOpen) return;
     newsFullOpen = false;
+    if (!silent && location.pathname.startsWith('/news/')) history.replaceState('', '', '/news');
     const r = newsSource ? newsSource.getBoundingClientRect()
       : { top: innerHeight * 0.44, bottom: innerHeight * 0.56 };
     split(r, false);
@@ -581,10 +609,19 @@ let newsSource = null;
   newsFull?.querySelector('.newsfull__close')?.addEventListener('click', () => window.closeNews());
 }
 
+function openNewsBySlug(slug) {
+  const i = currentNews.findIndex((n, idx) => newsSlug(n, idx) === slug);
+  if (i < 0) return false;
+  const item = document.querySelectorAll('#news .news__item')[i];
+  if (!item) return false;
+  window.openNews(item, currentNews[i]);
+  return true;
+}
+
 addEventListener('keydown', (e) => { if (e.key === 'Escape') { if (newsFullOpen) window.closeNews(); else close(); } });
-addEventListener('popstate', () => route(location.pathname.slice(1)));
+addEventListener('popstate', () => route(location.pathname));
 addEventListener('resize', () => { if (openPanel) updateFade(openPanel); }, { passive: true });
-if (location.pathname !== '/') route(location.pathname.slice(1));
+if (location.pathname !== '/') route(location.pathname);
 
 {
   const canHover = matchMedia('(hover: hover)').matches;

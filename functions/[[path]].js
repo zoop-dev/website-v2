@@ -7,8 +7,61 @@ export async function onRequest(context) {
   const asset = await env.ASSETS.fetch(request);
   if (asset.status !== 404) return asset;
 
+  const path = url.pathname;
   url.pathname = '/index.html';
-  return env.ASSETS.fetch(url);
+  const page = await env.ASSETS.fetch(url);
+
+  const m = /^\/news\/([^/]+)\/?$/.exec(path);
+  if (m && env.CONFIG) {
+    let slug = m[1];
+    try { slug = decodeURIComponent(slug); } catch (e) { }
+    const post = await findPost(env, slug);
+    if (post) return rewriteMeta(page, post, url.origin + path);
+  }
+  return page;
+}
+
+const slugify = (s) => String(s || '')
+  .toLowerCase().trim()
+  .replace(/['’]/g, '')
+  .replace(/[^a-z0-9]+/g, '-')
+  .replace(/^-+|-+$/g, '')
+  .slice(0, 60);
+
+async function findPost(env, slug) {
+  try {
+    const raw = await env.CONFIG.get('site');
+    if (!raw) return null;
+    const news = JSON.parse(raw).news;
+    if (!Array.isArray(news)) return null;
+    return news.find((n, i) => (slugify(n && n.slug) || slugify(n && n.title) || String(i + 1)) === slug) || null;
+  } catch (e) {
+    return null;
+  }
+}
+
+function rewriteMeta(page, post, href) {
+  const title = (post.title ? String(post.title) : 'news') + ' · zoop';
+  const body = Array.isArray(post.body) ? post.body : (post.body ? [post.body] : []);
+  const desc = String(body[0] || '').replace(/<[^>]*>/g, '').trim().slice(0, 200);
+  const setText = { element(e) { e.setInnerContent(title); } };
+  const attr = (name, value) => ({ element(e) { e.setAttribute(name, value); } });
+
+  let r = new HTMLRewriter()
+    .on('title', setText)
+    .on('meta[property="og:title"]', attr('content', title))
+    .on('meta[name="twitter:title"]', attr('content', title))
+    .on('meta[property="og:url"]', attr('content', href))
+    .on('link[rel="canonical"]', attr('href', href))
+    .on('meta[property="og:type"]', attr('content', 'article'));
+
+  if (desc) {
+    r = r
+      .on('meta[name="description"]', attr('content', desc))
+      .on('meta[property="og:description"]', attr('content', desc))
+      .on('meta[name="twitter:description"]', attr('content', desc));
+  }
+  return r.transform(page);
 }
 
 async function shortener(context, url) {
