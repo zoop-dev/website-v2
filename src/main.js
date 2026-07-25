@@ -187,99 +187,57 @@ fetch('/api/config', { cache: 'no-store' })
   if (location.pathname !== '/') { loader.remove(); return; }
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { loader.remove(); return; }
 
-  const COLS = {
-    hundreds: [1, 0],
-    tens: [0, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
-    ones: [0, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0],
-  };
-  const strips = {};
-  for (const key in COLS) {
-    const el = loader.querySelector(`.loader__strip[data-col="${key}"]`);
-    strips[key] = el;
-    if (el && !el.children.length) el.innerHTML = COLS[key].map((d) => `<span>${d}</span>`).join('');
-  }
-  const SNAP = 'cubic-bezier(0.7, 0, 0.2, 1)';
+  const wordEl = loader.querySelector('.loader__word');
 
   const run = () => {
-    loader.classList.add('is-ready');
+    const N = 5;
+    const pulses = Array.from({ length: N }, (_, i) => {
+      const el = document.createElement('div');
+      el.className = 'loader__pulse';
+      el.textContent = 'zoop';
+      wordEl.appendChild(el);
+      return {
+        el,
+        rx: 22 + Math.random() * 20,
+        ry: 20 + Math.random() * 22,
+        speedX: 0.6 + Math.random() * 0.9,
+        speedY: 0.5 + Math.random() * 0.8,
+        phaseX: Math.random() * Math.PI * 2,
+        phaseY: Math.random() * Math.PI * 2,
+        cx: 20 + Math.random() * 60,
+        cy: 30 + Math.random() * 40,
+        aFreq: 0.9 + Math.random() * 1.1,
+        aPhase: (i / N) * Math.PI * 2,
+      };
+    });
 
-    const DIAL_MS = 1150, t0 = performance.now();
-    const smoothstep = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-    const wheelY = (pos) => { const eff = ((pos % 10) + 10) % 10; return -((10 - eff) / 11) * 100; };
+    const PULSE_MS = 1500;
+    const FADE_MS = 520;
+    const t0 = performance.now();
+
     const tick = () => {
-      const prog = Math.min(1, (performance.now() - t0) / DIAL_MS);
-      const v = prog * 100;
-      const tensPos = Math.floor(v / 10) + smoothstep(0.5, 1, (v % 10) / 10);
-      const hundPos = Math.min(1, Math.floor(v / 100) + smoothstep(0.9, 1, (v % 100) / 100));
-      if (strips.ones) strips.ones.style.transform = `translateY(${wheelY(v)}%)`;
-      if (strips.tens) strips.tens.style.transform = `translateY(${wheelY(tensPos)}%)`;
-      if (strips.hundreds) strips.hundreds.style.transform = `translateY(${-((1 - hundPos) / 2) * 100}%)`;
-      if (prog < 1) requestAnimationFrame(tick);
+      const el = performance.now() - t0;
+      const introRamp = Math.min(1, el / 220);
+      const outroRamp = 1 - Math.min(1, Math.max(0, (el - (PULSE_MS - 260)) / 260));
+      const t = el / 1000;
+
+      pulses.forEach((p) => {
+        const fx = p.cx + Math.sin(t * p.speedX + p.phaseX) * p.rx;
+        const fy = p.cy + Math.cos(t * p.speedY + p.phaseY) * p.ry;
+        const a = (Math.sin(t * p.aFreq + p.aPhase) * 0.5 + 0.5) ** 1.6;
+        p.el.style.setProperty('--fx', fx.toFixed(1) + '%');
+        p.el.style.setProperty('--fy', fy.toFixed(1) + '%');
+        p.el.style.setProperty('--pa', (a * introRamp * outroRamp).toFixed(3));
+      });
+
+      if (el < PULSE_MS) requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
 
-    const tapesEl = loader.querySelector('.loader__tapes');
-    const fieldTop = document.createElement('div'); fieldTop.className = 'loader__field loader__field--top';
-    const fieldBot = document.createElement('div'); fieldBot.className = 'loader__field loader__field--bot';
-    tapesEl.append(fieldTop, fieldBot);
-    const zoops = '<span>zoop</span>'.repeat(44);
-    const specs = [{ offX: 0, offY: 0, ang: 0, dir: -1, main: true }];
-    const D = 7;
-
-    const xThird = [-40, -8, 24];
-    for (let i = 0; i < D; i++) {
-      const band = -66 + ((i + Math.random()) / D) * 132;
-      specs.push({
-        offX: xThird[i % 3] + Math.random() * 24,
-        offY: band,
-        ang: (Math.random() < 0.5 ? -1 : 1) * (26 + Math.random() * 36),
-        dir: Math.random() < 0.5 ? -1 : 1,
-        main: false,
-      });
-    }
-    const mkTape = (transform) => {
-      const t = document.createElement('div');
-      t.className = 'loader__t';
-      t.style.transform = transform;
-      t.innerHTML = `<span class="loader__logo">${zoops}</span>`;
-      return t;
-    };
-    const tapes = specs.map((s) => {
-      const base = `translate(-50%, -50%) translate(${s.offX.toFixed(1)}vw, ${s.offY.toFixed(1)}vh) rotate(${s.ang.toFixed(1)}deg)`;
-      const rest = `${base} translateX(0%)`;
-      const start = `${base} translateX(${s.dir * 130}%)`;
-      const a = mkTape(start), b = mkTape(start);
-      fieldTop.appendChild(a); fieldBot.appendChild(b);
-      return { a, b, start, rest, main: s.main };
-    });
-
-    const IN_EASE = 'cubic-bezier(0.22, 1, 0.3, 1)';
-    const SWEEP_AT = DIAL_MS + 100;
-    const SWEEP = 580;
-
-    let lastIn = SWEEP_AT + SWEEP;
-    tapes.forEach((t) => {
-      const delay = t.main ? SWEEP_AT : SWEEP_AT + 200 + Math.random() * 520;
-      lastIn = Math.max(lastIn, delay + SWEEP);
-      const kf = [{ transform: t.start }, { transform: t.rest }];
-      const opt = { duration: SWEEP, delay, easing: IN_EASE, fill: 'both' };
-      t.a.animate(kf, opt); t.b.animate(kf, opt);
-    });
-
-    loader.querySelector('.loader__counters')?.animate([{ opacity: 1 }, { opacity: 0 }],
-      { duration: 220, delay: SWEEP_AT + 160, fill: 'forwards' });
-
-    const SPLIT_AT = lastIn + 260;
-    const SPLIT = 720;
-    const OUT = 'cubic-bezier(0.5, 0, 0.15, 1)';
-    loader.querySelector('.loader__backdrop')?.animate([{ opacity: 1 }, { opacity: 0 }],
-      { duration: 380, delay: SPLIT_AT + 90, easing: 'ease-out', fill: 'forwards' });
-    fieldTop.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(-110vh)' }],
-      { duration: SPLIT, delay: SPLIT_AT, easing: OUT, fill: 'forwards' });
-    fieldBot.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(110vh)' }],
-      { duration: SPLIT, delay: SPLIT_AT, easing: OUT, fill: 'forwards' });
-
-    setTimeout(() => loader.remove(), SPLIT_AT + SPLIT + 80);
+    setTimeout(() => {
+      loader.classList.add('is-out');
+      setTimeout(() => loader.remove(), FADE_MS + 60);
+    }, PULSE_MS);
   };
 
   Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))]).then(run);
