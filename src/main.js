@@ -187,57 +187,13 @@ fetch('/api/config', { cache: 'no-store' })
   if (location.pathname !== '/') { loader.remove(); return; }
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { loader.remove(); return; }
 
-  const wordEl = loader.querySelector('.loader__word');
-
   const run = () => {
-    const N = 5;
-    const pulses = Array.from({ length: N }, (_, i) => {
-      const el = document.createElement('div');
-      el.className = 'loader__pulse';
-      el.textContent = 'zoop';
-      wordEl.appendChild(el);
-      return {
-        el,
-        rx: 22 + Math.random() * 20,
-        ry: 20 + Math.random() * 22,
-        speedX: 0.6 + Math.random() * 0.9,
-        speedY: 0.5 + Math.random() * 0.8,
-        phaseX: Math.random() * Math.PI * 2,
-        phaseY: Math.random() * Math.PI * 2,
-        cx: 20 + Math.random() * 60,
-        cy: 30 + Math.random() * 40,
-        aFreq: 0.9 + Math.random() * 1.1,
-        aPhase: (i / N) * Math.PI * 2,
-      };
-    });
-
-    const PULSE_MS = 1500;
+    const HOLD_MS = 1300;
     const FADE_MS = 520;
-    const t0 = performance.now();
-
-    const tick = () => {
-      const el = performance.now() - t0;
-      const introRamp = Math.min(1, el / 220);
-      const outroRamp = 1 - Math.min(1, Math.max(0, (el - (PULSE_MS - 260)) / 260));
-      const t = el / 1000;
-
-      pulses.forEach((p) => {
-        const fx = p.cx + Math.sin(t * p.speedX + p.phaseX) * p.rx;
-        const fy = p.cy + Math.cos(t * p.speedY + p.phaseY) * p.ry;
-        const a = (Math.sin(t * p.aFreq + p.aPhase) * 0.5 + 0.5) ** 1.6;
-        p.el.style.setProperty('--fx', fx.toFixed(1) + '%');
-        p.el.style.setProperty('--fy', fy.toFixed(1) + '%');
-        p.el.style.setProperty('--pa', (a * introRamp * outroRamp).toFixed(3));
-      });
-
-      if (el < PULSE_MS) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
-
     setTimeout(() => {
       loader.classList.add('is-out');
       setTimeout(() => loader.remove(), FADE_MS + 60);
-    }, PULSE_MS);
+    }, HOLD_MS);
   };
 
   Promise.race([document.fonts.ready, new Promise((r) => setTimeout(r, 1200))]).then(run);

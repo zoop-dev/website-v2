@@ -232,6 +232,7 @@ body {
   .close-x { transition: none; }
   .close-x.is-closing { opacity: 0; transform: none; transition: opacity 120ms linear; }
   .side { animation: none; }
+  .loader__word { animation: none; }
 }
 
 .panel__title {
@@ -808,28 +809,18 @@ body {
 .loader.is-out { opacity: 0; }
 
 .loader__word {
-  position: relative;
   font-family: var(--nav-font);
   font-weight: 900;
   text-transform: uppercase;
   letter-spacing: -0.04em;
   line-height: 1;
   font-size: clamp(3.2rem, 15vw, 11rem);
-}
-.loader__word::before {
-  content: "zoop";
-  visibility: hidden;
-}
-.loader__pulse {
-  position: absolute;
-  inset: 0;
   color: transparent;
-  mix-blend-mode: screen;
+  background: linear-gradient(90deg,
+    rgb(255, 224, 138), rgb(255, 171, 94), rgb(255, 95, 109), rgb(200, 75, 214),
+    rgb(255, 95, 109), rgb(255, 171, 94), rgb(255, 224, 138));
+  background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
-  background-repeat: no-repeat;
-  background-image: radial-gradient(22vmin 17vmin at var(--fx, 50%) var(--fy, 50%),
-    rgb(255 224 138 / var(--pa, 0)) 0%, rgb(255 171 94 / var(--pa, 0)) 26%,
-    rgb(255 95 109 / var(--pa, 0)) 52%, rgb(200 75 214 / var(--pa, 0)) 76%,
-    transparent 100%);
+  animation: side-ombre 2.4s linear infinite;
 }
