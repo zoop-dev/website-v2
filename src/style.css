@@ -802,7 +802,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
   background: var(--bg);
   transition: opacity 0.5s ease;
 }
@@ -815,6 +814,7 @@ body {
   letter-spacing: -0.04em;
   line-height: 1;
   font-size: clamp(3.2rem, 15vw, 11rem);
+  padding-right: 0.06em;
   color: transparent;
   background: linear-gradient(90deg,
     rgb(255, 224, 138), rgb(255, 171, 94), rgb(255, 95, 109), rgb(200, 75, 214),
@@ -823,4 +823,6 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   animation: side-ombre 2.4s linear infinite;
+  transition: opacity 0.42s ease;
 }
+.loader__word.is-out { opacity: 0; }

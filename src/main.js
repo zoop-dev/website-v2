@@ -189,10 +189,17 @@ fetch('/api/config', { cache: 'no-store' })
 
   const run = () => {
     const HOLD_MS = 1300;
-    const FADE_MS = 520;
+    const WORD_FADE_MS = 420;
+    const BLACK_HOLD_MS = 220;
+    const BG_FADE_MS = 520;
+    const wordEl = loader.querySelector('.loader__word');
+
     setTimeout(() => {
-      loader.classList.add('is-out');
-      setTimeout(() => loader.remove(), FADE_MS + 60);
+      wordEl.classList.add('is-out');
+      setTimeout(() => {
+        loader.classList.add('is-out');
+        setTimeout(() => loader.remove(), BG_FADE_MS + 60);
+      }, WORD_FADE_MS + BLACK_HOLD_MS);
     }, HOLD_MS);
   };
 
