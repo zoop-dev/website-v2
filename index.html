@@ -112,6 +112,21 @@
           <p>got something weird to build? say hi.</p>
           <p><a class="prose__mail" id="contact-mail" href="mailto:hi@zachy.cc">hi@zachy.cc</a></p>
         </div>
+        <form class="cform" id="cform" autocomplete="off" novalidate>
+          <input type="hidden" name="access_key" value="0523db7d-af4b-40a2-a6da-068f2979d4fd">
+          <input type="hidden" name="subject" value="zachy.cc — new message">
+          <input type="hidden" name="redirect" value="false">
+          <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" aria-hidden="true">
+          <div class="cform__row">
+            <input class="cform__input" type="text" name="name" placeholder="name" required>
+            <input class="cform__input" type="email" name="email" placeholder="email" required>
+          </div>
+          <textarea class="cform__input cform__textarea" name="message" placeholder="what are we building?" required rows="4"></textarea>
+          <div class="cform__foot">
+            <button class="cform__btn" type="submit">send it →</button>
+            <span class="cform__status" aria-live="polite"></span>
+          </div>
+        </form>
         <div class="socials socials--panel" aria-label="Contact &amp; links"></div>
       </div>
     </section>

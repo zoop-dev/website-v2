@@ -688,3 +688,39 @@ if (location.pathname !== '/') route(location.pathname);
     });
   }
 }
+
+{
+  const form = document.getElementById('cform');
+  if (form) {
+    const btn = form.querySelector('.cform__btn');
+    const status = form.querySelector('.cform__status');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.textContent = 'sending…';
+      status.textContent = '';
+      status.className = 'cform__status';
+      try {
+        const res = await fetch('https://api.web3forms.com/submit', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(Object.fromEntries(new FormData(form))),
+        });
+        const json = await res.json();
+        if (json.success) {
+          status.textContent = 'sent!';
+          status.classList.add('is-ok');
+          form.reset();
+        } else {
+          throw new Error(json.message || 'error');
+        }
+      } catch {
+        status.textContent = 'something went wrong — try emailing directly';
+        status.classList.add('is-err');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'send it →';
+      }
+    });
+  }
+}
