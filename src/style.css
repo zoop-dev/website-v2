@@ -722,7 +722,7 @@ body {
     transform: none;
     transform-origin: left center;
     writing-mode: horizontal-tb;
-    font-size: 3.5rem;
+    font-size: 4.1rem;
     line-height: 1;
     letter-spacing: 0;
     background: linear-gradient(90deg,
@@ -813,7 +813,7 @@ body {
   text-transform: uppercase;
   letter-spacing: -0.04em;
   line-height: 1;
-  font-size: clamp(3.2rem, 15vw, 11rem);
+  font-size: clamp(4rem, 20vw, 13rem);
   padding-right: 0.06em;
   color: transparent;
   background: linear-gradient(90deg,
