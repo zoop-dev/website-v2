@@ -287,7 +287,7 @@ body {
   transition: opacity 0.25s ease;
   z-index: 1;
 }
-.panel.has-more::after { opacity: 1; }
+#work.panel.has-more::after { opacity: 1; }
 
 .panel.is-open .panel__close { animation: fadeIn 0.35s ease 0.55s both; }
 
