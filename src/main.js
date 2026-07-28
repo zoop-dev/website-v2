@@ -257,7 +257,7 @@ function slideTitle(panel, source) {
       { transform: `translate(0px, ${dy}px)`, offset: 0.35, easing: EASE },
       { transform: 'translate(0px, 0px)', offset: 1 },
     ];
-    bodyTopPx = f.bottom + 24;
+    bodyTopPx = Math.min(f.bottom + 24, innerHeight * 0.55);
   } else {
     frames = [{ transform: 'translateX(-45vw)', easing: EASE }, { transform: 'none' }];
     bodyTopPx = last.bottom + 28;
