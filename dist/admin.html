@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html {
+  background: #000;
+  color: #c8d8e8;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  max-width: 58ch;
+  margin: 0 auto;
+  padding: clamp(3rem, 10vw, 5rem) clamp(1.5rem, 6vw, 2.5rem) 6rem;
+}
+
+h1 {
+  font-size: 0.7em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #3a5060;
+  margin-bottom: 2rem;
+}
+
+#gate { display: flex; flex-direction: column; gap: 0.6rem; }
+#gate input {
+  background: none;
+  border: 1px solid #1a2a35;
+  color: #c8d8e8;
+  font: inherit;
+  padding: 0.55rem 0.75rem;
+  width: 100%;
+  outline: none;
+}
+#gate input:focus { border-color: #3a5060; }
+#gate button {
+  align-self: flex-start;
+  background: none;
+  border: 1px solid #3a5060;
+  color: #c8d8e8;
+  font: inherit;
+  padding: 0.45rem 1.2rem;
+  cursor: pointer;
+}
+#gate button:hover { border-color: #c8d8e8; }
+#gate-err { color: #ff5f6d; font-size: 0.85em; min-height: 1.2em; }
+
+#editor { display: none; flex-direction: column; gap: 2.5rem; }
+
+.section-label {
+  font-size: 0.68em;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #3a5060;
+  margin-bottom: 0.7rem;
+}
+
+textarea, input[type="text"], input[type="url"] {
+  background: none;
+  border: 1px solid #1a2a35;
+  color: #c8d8e8;
+  font: inherit;
+  padding: 0.5rem 0.7rem;
+  width: 100%;
+  resize: vertical;
+  outline: none;
+}
+textarea:focus, input[type="text"]:focus, input[type="url"]:focus { border-color: #3a5060; }
+
+.project-card {
+  border: 1px solid #1a2a35;
+  margin-bottom: 0.5rem;
+}
+
+.project-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid #1a2a35;
+  font-size: 0.85em;
+  color: #3a5060;
+}
+
+.card-name { color: #c8d8e8; }
+
+.card-actions { display: flex; gap: 0.5rem; }
+.card-actions button {
+  background: none;
+  border: none;
+  color: #3a5060;
+  font: inherit;
+  cursor: pointer;
+  padding: 0 0.2rem;
+  line-height: 1;
+}
+.card-actions button:hover { color: #c8d8e8; }
+
+.project-card-body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.field-row { display: flex; flex-direction: column; gap: 0.2rem; }
+.field-row label { font-size: 0.72em; letter-spacing: 0.08em; color: #3a5060; }
+
+.color-row { display: flex; gap: 0.5rem; align-items: center; }
+.color-row input[type="color"] {
+  width: 2rem;
+  height: 1.6rem;
+  border: 1px solid #1a2a35;
+  background: none;
+  padding: 0.1rem;
+  cursor: pointer;
+}
+
+.social-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+.social-row select {
+  background: #000;
+  border: 1px solid #1a2a35;
+  color: #c8d8e8;
+  font: inherit;
+  padding: 0.5rem 0.5rem;
+  width: 8rem;
+  flex-shrink: 0;
+  outline: none;
+}
+.social-row select:focus { border-color: #3a5060; }
+.social-row input { flex: 1; }
+.social-row button {
+  background: none;
+  border: none;
+  color: #3a5060;
+  font: inherit;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  flex-shrink: 0;
+}
+.social-row button:hover { color: #ff5f6d; }
+
+.add-btn {
+  background: none;
+  border: none;
+  color: #3a5060;
+  font: inherit;
+  cursor: pointer;
+  padding: 0;
+  font-size: 0.85em;
+  margin-top: 0.3rem;
+}
+.add-btn:hover { color: #c8d8e8; }
+
+.save-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.save-btn {
+  background: none;
+  border: 1px solid #3a5060;
+  color: #c8d8e8;
+  font: inherit;
+  padding: 0.55rem 2rem;
+  cursor: pointer;
+}
+.save-btn:hover { border-color: #c8d8e8; }
+.save-btn:disabled { opacity: 0.4; cursor: default; }
+
+#status { font-size: 0.85em; color: #3a5060; }
+#status.ok  { color: #4dffb4; }
+#status.err { color: #ff5f6d; }
+</style>
+</head>
+<body>
+
+<h1>admin</h1>
+
+<div id="gate">
+  <input type="password" id="token-input" placeholder="token" autocomplete="current-password">
+  <button id="unlock-btn">unlock</button>
+  <span id="gate-err"></span>
+</div>
+
+<div id="load-err" style="display:none">
+  <p style="color:#ff5f6d;margin-bottom:0.8rem">config failed to load.</p>
+  <button id="retry-btn" style="background:none;border:1px solid #3a5060;color:#c8d8e8;font:inherit;padding:0.45rem 1.2rem;cursor:pointer">retry</button>
+</div>
+
+<div id="editor">
+
+  <div>
+    <div class="section-label">bio</div>
+    <textarea id="bio-field" rows="3"></textarea>
+  </div>
+
+  <div>
+    <div class="section-label">projects</div>
+    <div id="projects-list"></div>
+    <button class="add-btn" id="add-project">+ project</button>
+  </div>
+
+  <div>
+    <div class="section-label">socials</div>
+    <div id="socials-list"></div>
+    <button class="add-btn" id="add-social">+ social</button>
+  </div>
+
+  <div class="save-row">
+    <button class="save-btn" id="save-btn">save</button>
+    <span id="status"></span>
+  </div>
+
+</div>
+
+<script>
+const CONFIG_URL = '/api/config';
+const SOCIAL_TYPES = ['email','github','signal','twitter','bluesky','mastodon','linkedin','spotify'];
+
+let token = '';
+
+document.getElementById('unlock-btn').addEventListener('click', unlock);
+document.getElementById('token-input').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
+
+async function unlock() {
+  const t = document.getElementById('token-input').value.trim();
+  if (!t) return;
+  const err = document.getElementById('gate-err');
+  err.textContent = 'connecting…';
+  try {
+    const res = await fetch(CONFIG_URL, { headers: { Authorization: `Bearer ${t}` } });
+    if (res.status === 401) { err.textContent = 'wrong token'; return; }
+    if (!res.ok) { err.textContent = `server error ${res.status}`; return; }
+    token = t;
+    const cfg = await res.json().catch(() => null);
+    showEditor(cfg);
+  } catch {
+    err.textContent = 'could not connect — check your network and try again';
+  }
+}
+
+function showEditor(cfg) {
+  document.getElementById('gate').style.display = 'none';
+  if (!cfg) {
+    document.getElementById('load-err').style.display = 'block';
+    return;
+  }
+  const ed = document.getElementById('editor');
+  ed.style.display = 'flex';
+  loadConfig(cfg);
+}
+
+function loadConfig(cfg) {
+  document.getElementById('bio-field').value = cfg.bio ?? '';
+  renderProjectCards(cfg.projects ?? []);
+  renderSocialRows(cfg.socials ?? []);
+}
+
+function renderProjectCards(projects) {
+  document.getElementById('projects-list').innerHTML = '';
+  projects.forEach(p => addProjectCard(p));
+}
+
+function addProjectCard(p = {}) {
+  const list = document.getElementById('projects-list');
+  const card = document.createElement('div');
+  card.className = 'project-card';
+  const [ca, cb] = p.colors ?? ['#ffffff', '#ffffff'];
+  card.innerHTML = `
+    <div class="project-card-head">
+      <span class="card-name">${p.name ?? 'new project'}</span>
+      <div class="card-actions">
+        <button data-up>↑</button>
+        <button data-dn>↓</button>
+        <button data-rm>✕</button>
+      </div>
+    </div>
+    <div class="project-card-body">
+      <div class="field-row"><label>name</label><input type="text" name="name" value="${esc(p.name ?? '')}"></div>
+      <div class="field-row"><label>tag</label><input type="text" name="tag" value="${esc(p.tag ?? '')}"></div>
+      <div class="field-row"><label>body</label><textarea name="body" rows="2">${esc(p.body ?? '')}</textarea></div>
+      <div class="field-row"><label>meta</label><input type="text" name="meta" value="${esc(p.meta ?? '')}"></div>
+      <div class="field-row"><label>link</label><input type="url" name="link" value="${esc(p.link ?? '')}"></div>
+      <div class="field-row">
+        <label>colors</label>
+        <div class="color-row">
+          <input type="color" name="color_a" value="${ca}">
+          <input type="color" name="color_b" value="${cb}">
+        </div>
+      </div>
+    </div>`;
+
+  card.querySelector('[name="name"]').addEventListener('input', e => {
+    card.querySelector('.card-name').textContent = e.target.value || 'new project';
+  });
+
+  card.querySelector('[data-up]').addEventListener('click', () => {
+    if (card.previousElementSibling) list.insertBefore(card, card.previousElementSibling);
+  });
+  card.querySelector('[data-dn]').addEventListener('click', () => {
+    if (card.nextElementSibling) list.insertBefore(card.nextElementSibling, card);
+  });
+  card.querySelector('[data-rm]').addEventListener('click', () => card.remove());
+
+  list.appendChild(card);
+}
+
+document.getElementById('add-project').addEventListener('click', () => addProjectCard());
+
+function readProjects() {
+  return Array.from(document.querySelectorAll('.project-card')).map(card => ({
+    name:   card.querySelector('[name="name"]').value.trim(),
+    tag:    card.querySelector('[name="tag"]').value.trim(),
+    body:   card.querySelector('[name="body"]').value.trim(),
+    meta:   card.querySelector('[name="meta"]').value.trim(),
+    link:   card.querySelector('[name="link"]').value.trim(),
+    colors: [card.querySelector('[name="color_a"]').value, card.querySelector('[name="color_b"]').value],
+  }));
+}
+
+function renderSocialRows(socials) {
+  document.getElementById('socials-list').innerHTML = '';
+  socials.forEach(s => addSocialRow(s));
+}
+
+function addSocialRow(s = {}) {
+  const list = document.getElementById('socials-list');
+  const row = document.createElement('div');
+  row.className = 'social-row';
+  const opts = SOCIAL_TYPES.map(t => `<option value="${t}"${t === s.type ? ' selected' : ''}>${t}</option>`).join('');
+  row.innerHTML = `
+    <select name="type">${opts}</select>
+    <input type="text" name="href" value="${esc(s.href ?? '')}" placeholder="https:// or mailto:">
+    <button>✕</button>`;
+  row.querySelector('button').addEventListener('click', () => row.remove());
+  list.appendChild(row);
+}
+
+document.getElementById('add-social').addEventListener('click', () => addSocialRow());
+
+function readSocials() {
+  return Array.from(document.querySelectorAll('.social-row')).map(row => ({
+    type: row.querySelector('[name="type"]').value,
+    href: row.querySelector('[name="href"]').value.trim(),
+  })).filter(s => s.href);
+}
+
+document.getElementById('save-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('save-btn');
+  const status = document.getElementById('status');
+  btn.disabled = true;
+  status.textContent = 'saving…';
+  status.className = '';
+
+  const payload = {
+    bio:      document.getElementById('bio-field').value.trim(),
+    projects: readProjects(),
+    socials:  readSocials(),
+  };
+
+  try {
+    const res = await fetch(CONFIG_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(payload),
+    });
+    const json = await res.json();
+    if (json.ok) {
+      status.textContent = 'saved';
+      status.className = 'ok';
+    } else {
+      throw new Error(json.error ?? 'error');
+    }
+  } catch (e) {
+    status.textContent = e.message || 'failed';
+    status.className = 'err';
+  } finally {
+    btn.disabled = false;
+  }
+});
+
+document.getElementById('retry-btn').addEventListener('click', async () => {
+  document.getElementById('load-err').style.display = 'none';
+  try {
+    const res = await fetch(CONFIG_URL, { headers: { Authorization: `Bearer ${token}` } });
+    const cfg = res.ok ? await res.json().catch(() => null) : null;
+    if (cfg) showEditor(cfg);
+    else document.getElementById('load-err').style.display = 'block';
+  } catch {
+    document.getElementById('load-err').style.display = 'block';
+  }
+});
+
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,199 @@
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #000;
+  --text: #c8d8e8;
+  --muted: #3a5060;
+  --dim: #1a2a35;
+  --white: #fff;
+  --grad: linear-gradient(90deg,
+    rgb(255,224,138), rgb(255,171,94), rgb(255,95,109),
+    rgb(200,75,214), rgb(255,95,109), rgb(255,171,94), rgb(255,224,138));
+}
+
+html {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: clamp(13px, 1.5vw, 15px);
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  max-width: 58ch;
+  margin: 0 auto;
+  padding: clamp(3rem, 12vw, 7rem) clamp(1.5rem, 6vw, 2.5rem) clamp(4rem, 10vw, 6rem);
+}
+
+a {
+  color: inherit;
+  text-underline-offset: 3px;
+}
+a:hover { color: var(--white); }
+
+.wordmark {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 900;
+  font-size: clamp(3.5rem, 14vw, 8rem);
+  line-height: 0.88;
+  letter-spacing: -0.04em;
+  background: var(--grad);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: ombre 6s linear infinite;
+  margin-bottom: 2.8rem;
+  user-select: none;
+  display: inline-block;
+  padding-right: 0.06em;
+}
+
+@keyframes ombre {
+  from { background-position: 0% 50%; }
+  to   { background-position: 200% 50%; }
+}
+
+.bio {
+  color: var(--muted);
+  margin-bottom: 3rem;
+  max-width: 40ch;
+}
+
+.projects {
+  margin-bottom: 3rem;
+}
+
+.project {
+  border-top: 1px solid var(--dim);
+}
+.project:last-of-type {
+  border-bottom: 1px solid var(--dim);
+}
+
+.project summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+.project summary::-webkit-details-marker { display: none; }
+
+.project__name {
+  font-family: 'Unbounded', sans-serif;
+  font-weight: 900;
+  font-size: 1em;
+  letter-spacing: -0.02em;
+  color: var(--white);
+  transition: color 0.18s ease, transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+  transform-origin: left center;
+  display: inline-block;
+  -webkit-background-clip: text;
+  background-clip: text;
+  background-size: 200% 100%;
+}
+
+.project summary:hover .project__name,
+.project summary:focus-visible .project__name,
+.project[open] .project__name {
+  color: transparent;
+  background-image: linear-gradient(90deg, var(--ca), var(--cb), var(--ca));
+  animation: ombre 3s linear infinite;
+}
+
+.project summary:hover .project__name,
+.project summary:focus-visible .project__name {
+  transform: scale(1.1);
+}
+
+.project__tag {
+  font-size: 0.78em;
+  color: var(--muted);
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project summary:hover .project__tag,
+.project[open] summary .project__tag {
+  transform: translateX(0.55em);
+}
+
+.project__toggle {
+  color: var(--dim);
+  font-size: 1.1em;
+  font-weight: 400;
+  flex-shrink: 0;
+  transition: color 0.18s ease;
+  width: 1em;
+  text-align: right;
+}
+.project summary:hover .project__toggle { color: var(--muted); }
+
+.project__body {
+  font-size: 0.82em;
+  color: var(--muted);
+  line-height: 1.75;
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.38s cubic-bezier(0.16, 1, 0.3, 1), padding 0.38s ease;
+  padding: 0;
+}
+.project__body a {
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.project__body a:hover { color: var(--white); }
+.project__meta {
+  color: var(--dim);
+  margin-top: 0.35rem;
+  font-size: 0.9em;
+}
+.project__link {
+  display: inline-block;
+  margin-top: 0.5rem;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: row;
+  gap: 1.2rem;
+  align-items: center;
+  margin-top: 0.9rem;
+}
+
+.contact-links a {
+  display: inline-flex;
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+.contact-links a:hover { color: var(--white); }
+.contact-links svg {
+  width: 1.25rem;
+  height: 1.25rem;
+  fill: currentColor;
+  display: block;
+}
+
+.error-screen {
+  color: var(--muted);
+  font-size: 0.82em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wordmark { animation: none; background-position: 50% 50%; }
+  .project__name,
+  .project__body { transition: none; }
+}
