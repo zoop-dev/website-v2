@@ -18,6 +18,7 @@ html {
   font-size: clamp(13px, 1.5vw, 15px);
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -78,9 +79,11 @@ a:hover { color: var(--white); }
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 0;
+  min-height: 48px;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  touch-action: manipulation;
   outline: none;
 }
 .project summary::-webkit-details-marker { display: none; }
@@ -160,9 +163,15 @@ a:hover { color: var(--white); }
   margin-top: 0.35rem;
   font-size: 0.9em;
 }
+
+.project__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin-top: 0.5rem;
+}
 .project__link {
   display: inline-block;
-  margin-top: 0.5rem;
 }
 
 .contact-links {
@@ -178,6 +187,9 @@ a:hover { color: var(--white); }
   color: var(--muted);
   text-decoration: none;
   transition: color 0.15s ease;
+  touch-action: manipulation;
+  padding: 0.25rem;
+  margin: -0.25rem;
 }
 .contact-links a:hover { color: var(--white); }
 .contact-links svg {
@@ -190,6 +202,11 @@ a:hover { color: var(--white); }
 .error-screen {
   color: var(--muted);
   font-size: 0.82em;
+}
+
+@media (max-width: 480px) {
+  .project summary { gap: 0.5rem; }
+  .contact-links svg { width: 1.4rem; height: 1.4rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -28,7 +28,11 @@ function renderProjects(projects) {
   const el = document.getElementById('projects');
   el.innerHTML = (projects ?? []).map(p => {
     const [a, b] = p.colors ?? ['#fff','#fff'];
-    const link = p.link ? `<a class="project__link" href="${esc(p.link)}" target="_blank" rel="noopener">${esc(linkDisplay(p.link))} →</a>` : '';
+    const links = p.links && p.links.length
+      ? p.links.map(l => `<a class="project__link" href="${esc(l.href)}" target="_blank" rel="noopener">${esc(l.label)} →</a>`).join('')
+      : p.link
+        ? `<a class="project__link" href="${esc(p.link)}" target="_blank" rel="noopener">${esc(linkDisplay(p.link))} →</a>`
+        : '';
     return `<details class="project" style="--ca:${esc(a)};--cb:${esc(b)}">
   <summary>
     <span class="project__name">${esc(p.name)}</span>
@@ -36,9 +40,9 @@ function renderProjects(projects) {
     <span class="project__toggle">+</span>
   </summary>
   <div class="project__body">
-    <p>${esc(p.body)}</p>
+    ${p.body ? `<p>${esc(p.body)}</p>` : ''}
     ${p.meta ? `<p class="project__meta">${esc(p.meta)}</p>` : ''}
-    ${link}
+    ${links ? `<div class="project__links">${links}</div>` : ''}
   </div>
 </details>`;
   }).join('');
@@ -65,10 +69,13 @@ function setupAccordion() {
       body.style.maxHeight = '0';
       body.style.paddingBottom = '0';
     }));
-    body.addEventListener('transitionend', () => {
+    const onClose = e => {
+      if (e.propertyName !== 'max-height') return;
+      body.removeEventListener('transitionend', onClose);
       el.removeAttribute('open');
       toggle.textContent = '+';
-    }, { once: true });
+    };
+    body.addEventListener('transitionend', onClose);
   }
 
   all.forEach(details => {
@@ -84,7 +91,12 @@ function setupAccordion() {
         const body = details.querySelector('.project__body');
         body.style.maxHeight = body.scrollHeight + 'px';
         body.style.paddingBottom = '1rem';
-        body.addEventListener('transitionend', () => { body.style.maxHeight = 'none'; }, { once: true });
+        const onOpen = e => {
+          if (e.propertyName !== 'max-height') return;
+          body.removeEventListener('transitionend', onOpen);
+          body.style.maxHeight = 'none';
+        };
+        body.addEventListener('transitionend', onOpen);
       }
     });
   });

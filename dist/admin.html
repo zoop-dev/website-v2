@@ -17,6 +17,7 @@ html {
   font-size: 13px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -56,14 +57,42 @@ h1 {
 #gate button:hover { border-color: #c8d8e8; }
 #gate-err { color: #ff5f6d; font-size: 0.85em; min-height: 1.2em; }
 
-#editor { display: none; flex-direction: column; gap: 2.5rem; }
+#editor { display: none; flex-direction: column; gap: 1.5rem; }
+
+details.section { border-top: 1px solid #1a2a35; }
+details.section:last-of-type { border-bottom: 1px solid #1a2a35; }
+
+details.section > summary {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  outline: none;
+}
+details.section > summary::-webkit-details-marker { display: none; }
 
 .section-label {
   font-size: 0.68em;
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: #3a5060;
-  margin-bottom: 0.7rem;
+}
+
+.section-toggle {
+  font-size: 0.85em;
+  color: #1a2a35;
+}
+details.section[open] .section-toggle { color: #3a5060; }
+
+.section-body {
+  padding-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 textarea, input[type="text"], input[type="url"] {
@@ -127,6 +156,25 @@ textarea:focus, input[type="text"]:focus, input[type="url"]:focus { border-color
   cursor: pointer;
 }
 
+.link-row {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-bottom: 0.3rem;
+}
+.link-row input[type="text"] { width: 7rem; flex-shrink: 0; }
+.link-row input[type="url"] { flex: 1; }
+.link-row button {
+  background: none;
+  border: none;
+  color: #3a5060;
+  font: inherit;
+  cursor: pointer;
+  padding: 0 0.3rem;
+  flex-shrink: 0;
+}
+.link-row button:hover { color: #ff5f6d; }
+
 .social-row {
   display: flex;
   gap: 0.5rem;
@@ -172,6 +220,7 @@ textarea:focus, input[type="text"]:focus, input[type="url"]:focus { border-color
   display: flex;
   align-items: center;
   gap: 1rem;
+  padding-top: 0.5rem;
 }
 
 .save-btn {
@@ -207,22 +256,28 @@ textarea:focus, input[type="text"]:focus, input[type="url"]:focus { border-color
 
 <div id="editor">
 
-  <div>
-    <div class="section-label">bio</div>
-    <textarea id="bio-field" rows="3"></textarea>
-  </div>
+  <details class="section" open>
+    <summary><span class="section-label">bio</span><span class="section-toggle">−</span></summary>
+    <div class="section-body">
+      <textarea id="bio-field" rows="3"></textarea>
+    </div>
+  </details>
 
-  <div>
-    <div class="section-label">projects</div>
-    <div id="projects-list"></div>
-    <button class="add-btn" id="add-project">+ project</button>
-  </div>
+  <details class="section" open>
+    <summary><span class="section-label">projects</span><span class="section-toggle">−</span></summary>
+    <div class="section-body">
+      <div id="projects-list"></div>
+      <button class="add-btn" id="add-project">+ project</button>
+    </div>
+  </details>
 
-  <div>
-    <div class="section-label">socials</div>
-    <div id="socials-list"></div>
-    <button class="add-btn" id="add-social">+ social</button>
-  </div>
+  <details class="section" open>
+    <summary><span class="section-label">socials</span><span class="section-toggle">−</span></summary>
+    <div class="section-body">
+      <div id="socials-list"></div>
+      <button class="add-btn" id="add-social">+ social</button>
+    </div>
+  </details>
 
   <div class="save-row">
     <button class="save-btn" id="save-btn">save</button>
@@ -236,6 +291,13 @@ const CONFIG_URL = '/api/config';
 const SOCIAL_TYPES = ['email','github','signal','twitter','bluesky','mastodon','linkedin','spotify'];
 
 let token = '';
+
+document.querySelectorAll('details.section > summary').forEach(s => {
+  s.addEventListener('click', () => {
+    const open = s.parentElement.hasAttribute('open');
+    s.querySelector('.section-toggle').textContent = open ? '+' : '−';
+  });
+});
 
 document.getElementById('unlock-btn').addEventListener('click', unlock);
 document.getElementById('token-input').addEventListener('keydown', e => { if (e.key === 'Enter') unlock(); });
@@ -263,8 +325,7 @@ function showEditor(cfg) {
     document.getElementById('load-err').style.display = 'block';
     return;
   }
-  const ed = document.getElementById('editor');
-  ed.style.display = 'flex';
+  document.getElementById('editor').style.display = 'flex';
   loadConfig(cfg);
 }
 
@@ -284,6 +345,9 @@ function addProjectCard(p = {}) {
   const card = document.createElement('div');
   card.className = 'project-card';
   const [ca, cb] = p.colors ?? ['#ffffff', '#ffffff'];
+  const existingLinks = p.links && p.links.length
+    ? p.links
+    : p.link ? [{ label: 'visit', href: p.link }] : [];
   card.innerHTML = `
     <div class="project-card-head">
       <span class="card-name">${p.name ?? 'new project'}</span>
@@ -298,7 +362,6 @@ function addProjectCard(p = {}) {
       <div class="field-row"><label>tag</label><input type="text" name="tag" value="${esc(p.tag ?? '')}"></div>
       <div class="field-row"><label>body</label><textarea name="body" rows="2">${esc(p.body ?? '')}</textarea></div>
       <div class="field-row"><label>meta</label><input type="text" name="meta" value="${esc(p.meta ?? '')}"></div>
-      <div class="field-row"><label>link</label><input type="url" name="link" value="${esc(p.link ?? '')}"></div>
       <div class="field-row">
         <label>colors</label>
         <div class="color-row">
@@ -306,7 +369,17 @@ function addProjectCard(p = {}) {
           <input type="color" name="color_b" value="${cb}">
         </div>
       </div>
+      <div class="field-row">
+        <label>links</label>
+        <div class="links-list"></div>
+        <button class="add-btn add-link-btn">+ link</button>
+      </div>
     </div>`;
+
+  const linksList = card.querySelector('.links-list');
+  existingLinks.forEach(l => addLinkRow(linksList, l));
+
+  card.querySelector('.add-link-btn').addEventListener('click', () => addLinkRow(linksList));
 
   card.querySelector('[name="name"]').addEventListener('input', e => {
     card.querySelector('.card-name').textContent = e.target.value || 'new project';
@@ -323,6 +396,17 @@ function addProjectCard(p = {}) {
   list.appendChild(card);
 }
 
+function addLinkRow(container, l = {}) {
+  const row = document.createElement('div');
+  row.className = 'link-row';
+  row.innerHTML = `
+    <input type="text" name="link_label" placeholder="label" value="${esc(l.label ?? '')}">
+    <input type="url" name="link_href" placeholder="https://" value="${esc(l.href ?? '')}">
+    <button>✕</button>`;
+  row.querySelector('button').addEventListener('click', () => row.remove());
+  container.appendChild(row);
+}
+
 document.getElementById('add-project').addEventListener('click', () => addProjectCard());
 
 function readProjects() {
@@ -331,8 +415,11 @@ function readProjects() {
     tag:    card.querySelector('[name="tag"]').value.trim(),
     body:   card.querySelector('[name="body"]').value.trim(),
     meta:   card.querySelector('[name="meta"]').value.trim(),
-    link:   card.querySelector('[name="link"]').value.trim(),
     colors: [card.querySelector('[name="color_a"]').value, card.querySelector('[name="color_b"]').value],
+    links:  Array.from(card.querySelectorAll('.link-row')).map(r => ({
+      label: r.querySelector('[name="link_label"]').value.trim(),
+      href:  r.querySelector('[name="link_href"]').value.trim(),
+    })).filter(l => l.href),
   }));
 }
 
