@@ -18,12 +18,6 @@
       "database_name": "lnk",
       "database_id": "ea573534-81a3-48ef-8337-19ddf179fe29",
       "migrations_dir": "migrations"
-    },
-    {
-      "binding": "ANALYTICS",
-      "database_name": "analytics",
-      "database_id": "d659882a-51bc-49da-9949-3506576e7f0c",
-      "migrations_dir": "analytics-migrations"
     }
   ]
 }
