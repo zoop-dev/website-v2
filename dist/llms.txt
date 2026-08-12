@@ -1,30 +1,34 @@
 # zachy.cc
 
-> Personal portfolio site for zoop — cool things for the web. Cloudflare glazer, WebGL enjoyer.
+> Personal site for zoop — cool things for the web. Cloudflare glazer, WebGL enjoyer.
 > Site: https://zachy.cc
 
 ## About
 
-zoop builds weird, fast, interactive things for the web: real-time WebGL, shaders, tools, and apps. The site is a vanilla JS single-page app with no framework, deployed on Cloudflare Pages with a Functions backend. Content is served from hardcoded defaults with live overrides from Cloudflare KV.
+zoop builds weird, fast, interactive things for the web: encrypted tools, real-time apps, and small utilities. Most projects run on Cloudflare — Workers, D1, R2, KV, Durable Objects.
+
+The site is a single page: a wordmark, a short bio, an expandable project list, and contact links. Vanilla JS, no framework. Deployed on Cloudflare Pages with a Functions backend; content is served from Cloudflare KV via `/api/config` and rendered client-side.
 
 ## Routes
 
-- / (home — giant stacked nav: Work, News, About, Stack, Contact)
-- /work (project list with expandable details)
-- /news (announcements and releases)
-- /about (bio)
-- /stack (tech stack badges)
-- /contact (email + socials)
-- /privacy (privacy policy)
-- /terms (terms — mostly a joke)
+- / (the whole site — bio, projects, contact)
+
+There are no other pages. Unknown paths return a 404.
 
 ## Projects
 
-- b3am — end-to-end encrypted messenger PWA (Durable Objects, AES-GCM)
-- drop — encrypted no-account file transfer (Workers, D1, R2) — https://drop.zachy.cc
-- Pulse — privacy-first health app for Android (Kotlin)
-- Foyer — config-driven framework running a family of sites (Node, Cloudflare)
-- Taskly — minimal task manager (Vite, Pages)
+- drop — encrypted, no-account file transfer. Upload, get a link, share; files self-destruct after download or expiry. Workers, D1, R2 — https://drop.zachy.cc (src: https://github.com/zoop-dev/drop)
+- b3am — real-time end-to-end encrypted messenger. Workers, D1, WebSocket — https://b3am.zo0p.dev
+- pulse — free, privacy-focused Garmin companion app for Android, fully local. Kotlin — https://fdroid.zachy.cc
+- foyer — open-source gated website framework with a built-in CMS; runs a family of sites from one config. Node, Cloudflare — https://foyer.zo0p.dev
+- my portfolio — https://portfolio.zo0p.dev
+- sp33d — network speed tester — https://sp33d.zo0p.dev
+- pr0xy — web proxy — https://pr0xy.zo0p.dev
+- m0rph — https://m0rph.zo0p.dev
+- shortl3y — url shortener — https://go.zo0p.dev
+- backly — a little code backup tool. CLI, JavaScript — https://github.com/zoop-dev/backly
+- pwa stuff — cool apps — https://pwa.zachy.cc
+- cm — compression — https://cm.loop82.com
 
 ## Contact
 
@@ -34,7 +38,8 @@ zoop builds weird, fast, interactive things for the web: real-time WebGL, shader
 
 ## Tech
 
-- Frontend: vanilla JS, Vite, tippy.js, simple-icons
-- Backend: Cloudflare Pages Functions, Workers KV, D1
+- Frontend: vanilla JS, no framework
+- Backend: Cloudflare Pages Functions, Workers KV (content), D1
 - Link shortener: lnk.zachy.cc (D1-backed)
+- Analytics: self-hosted, privacy-respecting — no cookies, no persistent identifiers
 - Deploy: Cloudflare Pages
