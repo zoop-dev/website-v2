@@ -4,10 +4,24 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/jetbrains-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-700.woff2') format('woff2');
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
@@ -233,6 +247,17 @@ textarea:focus, input[type="text"]:focus, input[type="url"]:focus { border-color
 }
 .save-btn:hover { border-color: #c8d8e8; }
 .save-btn:disabled { opacity: 0.4; cursor: default; }
+
+.version {
+  position: fixed;
+  left: 1.5rem;
+  bottom: 1.2rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: #1a2a35;
+  user-select: none;
+  pointer-events: none;
+}
 
 #status { font-size: 0.85em; color: #3a5060; }
 #status.ok  { color: #4dffb4; }
@@ -500,5 +525,7 @@ function esc(s) {
   return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 </script>
+<span class="version" data-version aria-hidden="true"></span>
+<script src="/version.js?v=4"></script>
 </body>
 </html>

@@ -4,10 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>404 — zach</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Unbounded:wght@900&display=swap" rel="stylesheet">
+<link rel="preload" href="/fonts/unbounded-900.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/jetbrains-mono-400.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/unbounded-900.woff2') format('woff2');
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html, body {
@@ -63,6 +78,17 @@ body {
 }
 .back:hover { color: #fff; }
 
+.version {
+  position: fixed;
+  left: clamp(2rem, 10vw, 6rem);
+  bottom: clamp(1.1rem, 4vw, 1.8rem);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: #1a2a35;
+  user-select: none;
+  pointer-events: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .num { animation: none; background-position: 50% 50%; }
 }
@@ -72,5 +98,7 @@ body {
   <div class="num" aria-label="404">404</div>
   <p class="msg">nothing here.</p>
   <a class="back" href="/">← go back</a>
+  <span class="version" data-version aria-hidden="true"></span>
+<script src="/version.js?v=4"></script>
 </body>
 </html>

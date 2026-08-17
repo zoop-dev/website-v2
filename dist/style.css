@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'JetBrains Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/jetbrains-mono-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Unbounded';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/unbounded-900.woff2') format('woff2');
+}
+
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
@@ -24,7 +40,18 @@ html {
 body {
   max-width: 58ch;
   margin: 0 auto;
-  padding: clamp(3rem, 12vw, 7rem) clamp(1.5rem, 6vw, 2.5rem) clamp(4rem, 10vw, 6rem);
+  padding: clamp(3rem, 12vw, 7rem) clamp(1.5rem, 6vw, 2.5rem) clamp(7rem, 16vw, 10rem);
+}
+
+.version {
+  position: fixed;
+  left: clamp(1.5rem, 6vw, 2.5rem);
+  bottom: clamp(1.1rem, 4vw, 1.8rem);
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--dim);
+  user-select: none;
+  pointer-events: none;
 }
 
 a {
